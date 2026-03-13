@@ -2,8 +2,10 @@ import ClientsGrid from "../components/ClientsGrid";
 
 function ClientsPage() {
   return (
-    <div className="flex h-screen items-center justify-center text-center">
-      <ClientsGrid/>
+    <div className="w-full flex justify-center p-2">
+      <div className="max-w-full overflow-hidden">
+        <ClientsGrid />
+      </div>
     </div>
   );
 }

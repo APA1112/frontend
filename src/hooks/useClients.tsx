@@ -19,7 +19,6 @@ export function useClients() {
         setLoading(false);
       });
   }, []);
-  console.log(clients);
 
   return { clients, loading, error };
 }

@@ -1,7 +1,11 @@
+import ClientsGrid from "../components/ClientsGrid";
+
 function ClientsPage() {
   return (
-    <div>ClientsPage</div>
-  )
+    <div className="flex h-screen items-center justify-center text-center">
+      <ClientsGrid/>
+    </div>
+  );
 }
 
-export default ClientsPage
+export default ClientsPage;

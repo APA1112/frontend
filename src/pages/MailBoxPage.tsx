@@ -1,11 +1,11 @@
 import TicketPreview from "../components/TicketPreview";
 import TicketsGrid from "../components/TicketsGrid";
-import { useTickets } from "../hooks/useTickets";
+import { useActiveTickets } from "../hooks/useActiveTickets";
 import { useState, useEffect } from "react";
 import type { Ticket } from "../types/classesInterfaces";
 
 function MailBoxPage() {
-  const { tickets, loading } = useTickets();
+  const { tickets, loading } = useActiveTickets();
   const [showLoader, setShowLoader] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [filteredTickets, setFilteredTickets] = useState<Ticket[]>([]);
@@ -68,14 +68,14 @@ function MailBoxPage() {
         />
       </div>
       <div className="w-full h-full overflow-hidden mt-[-60px] mt-0">
-          {selectedTicket ? (
-            <TicketPreview ticket={selectedTicket} />
-          ) : (
-            <div className="flex items-center justify-center h-full text-slate-400 border-2 border-dashed border-slate-200 rounded-lg">
-              Selecciona un ticket para ver los detalles
-            </div>
-          )}
-        </div>
+        {selectedTicket ? (
+          <TicketPreview ticket={selectedTicket} />
+        ) : (
+          <div className="flex items-center justify-center h-full text-slate-400 border-2 border-dashed border-slate-200 rounded-lg">
+            Selecciona un ticket para ver los detalles
+          </div>
+        )}
+      </div>
     </div>
   );
 }

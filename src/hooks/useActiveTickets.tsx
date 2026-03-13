@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Ticket } from "../types/classesInterfaces";
 
-export function useTickets() {
+export function useActiveTickets() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +19,6 @@ export function useTickets() {
         setLoading(false);
       });
   }, []);
-  console.log(tickets)
 
   return { tickets, loading, error };
 }

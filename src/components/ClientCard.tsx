@@ -7,7 +7,7 @@ interface ClientCardProps {
 
 function ClientCard({ client }: ClientCardProps) {
   return (
-    <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-orange-300 cursor-pointer transition-all group flex flex-col h-full">
+    <div className="bg-white w-full p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-orange-300 cursor-pointer transition-all group flex flex-col h-full">
       {/* Avatar e Info Principal */}
       <div className="flex items-center gap-4 mb-4">
         <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 font-bold group-hover:bg-orange-500 group-hover:text-white transition-colors shrink-0">

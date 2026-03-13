@@ -80,39 +80,45 @@ function ClientsGrid() {
     );
   }
   return (
-    <div className="flex flex-col h-screen gap-1 m-4">
-      {/* Header con Buscador */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-4">
+    <div className="flex flex-col h-full gap-1 mx-2 md:mx-4">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mt-4">
         <div className="w-full">
-          <h1 className="text-2xl font-bold text-slate-800">Clientes</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-slate-800">
+            Clientes
+          </h1>
           <p className="text-sm text-slate-500">
             {filteredClients.length} encontrados
           </p>
         </div>
 
-        <div className="flex flex-row gap-2 relative w-full md:w-1/2">
+        {/* Buscador y Botón optimizados */}
+        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
           <input
             type="text"
-            placeholder="Buscar por nombre o DNI..."
-            className="w-full pl-4 pr-10 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none transition-all"
+            placeholder="Buscar..."
+            className="w-full md:w-64 pl-4 py-2 border border-slate-300 rounded-lg outline-none"
             onChange={(e) => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
           />
-          <button className="flex items-center justify-center gap-2 p-4 rounded-xl w-full bg-orange-300 hover:bg-orange-100 cursor-pointer">
+          <button className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-orange-300 hover:bg-orange-400 transition-colors whitespace-nowrap text-sm font-medium">
             <FaPlusCircle />
             <span>Crear cliente</span>
           </button>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto mt-0 rounded-xl [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        <div className="grid lg:grid-cols-5 lg:grid-rows-3 md:grid-cols-2 lg:gap-6 md:gap-4 mt-10">
+
+      {/* Grid con scroll */}
+      <div className="flex-1 overflow-y-auto mt-4 rounded-xl scrollbar-hide">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 pb-10">
           {paginatedClients.map((client) => (
             <ClientCard key={client.dni} client={client} />
           ))}
         </div>
       </div>
+      {/*PAGINACIÓN*/}
       {totalPages > 1 && (
         <div className="flex justify-center gap-2 mb-10">
           <button

@@ -14,6 +14,7 @@ export function useClients() {
         setLoading(false);
       })
       .catch((err) => {
+        console.error("Detalles del error:", err);
         setError("Error al cargar clientes");
         setLoading(false);
       });

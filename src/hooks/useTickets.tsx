@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
-import type { Client } from "../types/classesInterfaces.ts";
+import type { Ticket } from "../types/classesInterfaces";
 
-export function useClients() {
-  const [clients, setClients] = useState<Client[]>([]);
+export function useTickets() {
+  const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("https://api.alepaton.dev/api/clients")
+    fetch("https://api.alepaton.dev/api/tickets/mailbox")
       .then((res) => res.json())
       .then((data) => {
-        setClients(data);
+        setTickets(data);
         setLoading(false);
       })
       .catch((err) => {
@@ -19,6 +19,7 @@ export function useClients() {
         setLoading(false);
       });
   }, []);
+  console.log(tickets)
 
-  return { clients, loading, error };
+  return { tickets, loading, error };
 }

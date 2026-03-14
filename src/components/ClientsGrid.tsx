@@ -14,9 +14,9 @@ function ClientsGrid() {
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      if (width < 768) setItemsPerPage(6);
-      else if (width < 1024) setItemsPerPage(8);
-      else setItemsPerPage(12);
+      if (width < 768) setItemsPerPage(5);
+      else if (width < 1024) setItemsPerPage(10);
+      else setItemsPerPage(15);
     };
     handleResize();
     window.addEventListener("resize", handleResize);

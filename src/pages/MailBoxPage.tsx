@@ -11,71 +11,69 @@ function MailBoxPage() {
   const [filteredTickets, setFilteredTickets] = useState<Ticket[]>([]);
 
   useEffect(() => {
-    // Iniciamos un temporizador de 1 segundo
-    const timer = setTimeout(() => {
-      setShowLoader(false);
-    }, 1000);
-
-    return () => clearTimeout(timer); // Limpieza
+    const timer = setTimeout(() => setShowLoader(false), 800);
+    return () => clearTimeout(timer);
   }, []);
-  //Cuando la lista filtrada cambie, seleccionamos el primero
+
   useEffect(() => {
     if (filteredTickets.length > 0) {
-      setSelectedTicket(filteredTickets[0]);
+      // Solo auto-seleccionar si no hay uno ya seleccionado o si el seleccionado ya no está en la lista
+      if (!selectedTicket || !filteredTickets.find(t => t.id === selectedTicket.id)) {
+        setSelectedTicket(filteredTickets[0]);
+      }
     } else {
       setSelectedTicket(null);
     }
   }, [filteredTickets]);
 
-  // Combinamos: Se muestra si el hook dice loading O si no han pasado los 2 segundos
   if (loading || showLoader) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen gap-4">
-        {/* SVG Animado (Spinner) */}
-        <svg
-          className="animate-spin h-12 w-12 text-orange-500"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          ></circle>
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
-        </svg>
-        <p className="text-lg font-medium text-slate-600 animate-pulse">
-          Preparando buzón...
-        </p>
+      <div className="flex h-screen bg-slate-50">
+        {/* Skeleton de la barra lateral */}
+        <div className="w-1/3 border-r border-slate-200 p-4 space-y-4 bg-white">
+          <div className="h-10 bg-slate-200 animate-pulse rounded-lg w-full" />
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-24 bg-slate-100 animate-pulse rounded-xl" />
+          ))}
+        </div>
+        {/* Skeleton del detalle */}
+        <div className="flex-1 p-8 space-y-6">
+          <div className="h-12 bg-slate-200 animate-pulse rounded-lg w-1/2" />
+          <div className="h-64 bg-slate-100 animate-pulse rounded-2xl" />
+        </div>
       </div>
     );
   }
+
   return (
-    <div className="flex flex-row w-full h-screen justify-between">
-      <div className="flex flex-row gap-4 w-full">
+    <div className="flex h-screen w-full bg-slate-50 overflow-hidden">
+      {/* PANEL IZQUIERDO: Listado de Tickets (Ancho fijo o proporcional) */}
+      <aside className="w-full md:w-[380px] lg:w-[420px] shrink-0 bg-white border-r border-slate-200 shadow-xl z-10">
         <TicketsGrid
           tickets={tickets}
           onSelectTicket={setSelectedTicket}
           onFilteredTicketsChange={setFilteredTickets}
         />
-      </div>
-      <div className="w-full h-full overflow-hidden mt-[-60px] mt-0">
+      </aside>
+
+      {/* PANEL DERECHO: Previsualización de Detalle */}
+      <main className="flex-1 relative overflow-y-auto bg-slate-100/50">
         {selectedTicket ? (
-          <TicketPreview ticket={selectedTicket} />
+          <div className="p-6 max-w-5xl mx-auto">
+             <TicketPreview ticket={selectedTicket} />
+          </div>
         ) : (
-          <div className="flex items-center justify-center h-full text-slate-400 border-2 border-dashed border-slate-200 rounded-lg">
-            Selecciona un ticket para ver los detalles
+          <div className="flex flex-col items-center justify-center h-full px-4 text-center">
+            <div className="w-24 h-24 bg-slate-200 rounded-full flex items-center justify-center mb-4 text-4xl">
+              📬
+            </div>
+            <h3 className="text-xl font-bold text-slate-700">Tu bandeja de entrada</h3>
+            <p className="text-slate-500 max-w-xs mt-2">
+              Selecciona un ticket de la lista de la izquierda para ver su historial y responder.
+            </p>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

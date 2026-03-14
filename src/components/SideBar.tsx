@@ -3,80 +3,67 @@ import { LuLogOut } from "react-icons/lu";
 import { FaUsers } from "react-icons/fa";
 import { BsMailbox } from "react-icons/bs";
 import { GrUserWorker } from "react-icons/gr";
-import { NavLink } from "react-router-dom";
+import { NavLink as RouterNavLink } from "react-router-dom";
 
-// Definimos la interfaz
-interface NavLink {
+interface NavItem {
   title: string;
-  icon: React.ReactNode;
-  active: boolean;
+  icon: React.ElementType;
+  path: string;
 }
 
 function SideBar() {
-  const navLinks: NavLink[] = [
-    {
-      title: "Home",
-      icon: <HiHome size={22} color="#555" />,
-      active: false,
-    },
-    {
-      title: "Buzón",
-      icon: <BsMailbox size={22} color="#555" />,
-      active: false,
-    },
-    {
-      title: "Clientes",
-      icon: <FaUsers size={22} color="#555" />,
-      active: false,
-    },
-    {
-      title: "Trabajadores",
-      icon: <GrUserWorker size={22} color="#555" />,
-      active: false,
-    },
+  const navLinks: NavItem[] = [
+    { title: "Home", icon: HiHome, path: "/" },
+    { title: "Buzón", icon: BsMailbox, path: "/buzón" },
+    { title: "Clientes", icon: FaUsers, path: "/clientes" },
+    { title: "Trabajadores", icon: GrUserWorker, path: "/trabajadores" },
   ];
 
   return (
-    <div className="fixed left-0 top-0 w-16 md:w-[230px] overflow-hidden h-full flex flex-col transition-all duration-300">
+    <aside className="h-screen w-16 md:w-[260px] bg-white border-r border-slate-200 flex flex-col transition-all duration-300 shrink-0 z-50">
       
       {/* Header del Logo */}
-      <div className="w-full flex items-center md:justify-start justify-center md:pl-5 h-[70px]">
-        <span className="text-orange-400 font-semibold text-2xl md:block hidden cursor-pointer">
-          NNS
-        </span>
-        <span className="text-orange-400 font-semibold text-2xl md:hidden block cursor-pointer">
-          N.
-        </span>
+      <div className="w-full flex items-center md:justify-start justify-center md:pl-6 h-[70px] border-b border-slate-50">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white font-black">
+            N
+          </div>
+          <span className="text-slate-800 font-black text-xl md:block hidden tracking-tight">
+            NNS <span className="text-orange-500">SYSTEM</span>
+          </span>
+        </div>
       </div>
 
       {/* Contenedor de Links */}
-      <div className="w-full h-full flex flex-col items-center md:items-start gap-2 py-5 px-3 relative">
+      <nav className="flex-1 flex flex-col gap-1.5 py-6 px-3">
         {navLinks.map((link) => (
-          <NavLink
+          <RouterNavLink
             key={link.title}
-            to={link.title === "Home" ? "/" : `/${link.title.toLowerCase()}`}
+            to={link.path}
             className={({ isActive }) =>
-              `flex items-center md:justify-start justify-center gap-2 w-full rounded-lg px-2 py-3 transition-colors ${
+              `flex items-center md:justify-start justify-center gap-3 w-full rounded-xl px-3 py-3 transition-all duration-200 group ${
                 isActive
-                  ? "bg-orange-300 text-white"
-                  : "hover:bg-orange-100 text-slate-600"
+                  ? "bg-orange-500 text-white shadow-lg shadow-orange-200"
+                  : "hover:bg-orange-50 text-slate-500 hover:text-orange-600"
               }`
             }
           >
-            {link.icon}
-            <span className="font-medium text-[15px] md:block hidden">
+            <link.icon size={22} className="shrink-0" />
+            <span className="font-bold text-[14px] md:block hidden">
               {link.title}
             </span>
-          </NavLink>
+          </RouterNavLink>
         ))}
+      </nav>
 
-        {/* Botón de Logout */}
-        <div className="flex absolute bottom-4 items-center md:justify-start justify-center gap-2 w-[calc(100%-24px)] rounded-lg hover:bg-orange-100 px-2 py-3 cursor-pointer text-slate-600">
-          <LuLogOut size={22} />
-          <span className="font-medium text-[15px] md:block hidden">Log Out</span>
-        </div>
+      {/* Botón de Logout*/}
+      <div className="p-3 border-t border-slate-100">
+        <button className="flex items-center md:justify-start justify-center gap-3 w-full rounded-xl px-3 py-3 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all group">
+          <LuLogOut size={22} className="group-hover:translate-x-1 transition-transform" />
+          <span className="font-bold text-[14px] md:block hidden">Cerrar Sesión</span>
+        </button>
       </div>
-    </div>
+    </aside>
   );
 }
 

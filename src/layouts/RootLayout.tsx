@@ -1,13 +1,15 @@
-import {Outlet} from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import SideBar from "../components/SideBar";
 
 export default function RootLayout() {
-    return (
-        <div className="flex w-full overflow-x-hidden">
-            <SideBar/>
-            <main className="flex-1 ml-16 md:ml-[230px] bg-slate-50 w-[calc(100%-64px)] md:w-[calc(100%-230px)] overflow-x-hidden">
-                <Outlet/>
-            </main>
+  return (
+    <div className="flex h-screen w-full bg-slate-50 overflow-hidden">
+      <SideBar />
+      <main className="flex-1 flex flex-col min-w-0 relative">
+        <div className="flex-1 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <Outlet />
         </div>
-    );
+      </main>
+    </div>
+  );
 }

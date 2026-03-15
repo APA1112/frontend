@@ -15,7 +15,7 @@ export interface Client {
   dni: string;
   phone: string;
   address: string;
-  createdAt: string; // Symfony suele enviarlo en formato ISO 8601
+  createdAt: string;
   services?: Service[];
 }
 

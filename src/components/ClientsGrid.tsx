@@ -114,7 +114,7 @@ function ClientsGrid() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Ordenar por:
@@ -154,10 +154,10 @@ function ClientsGrid() {
 
             <button
               onClick={toggleModalNewClient}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-200 transition-all active:scale-95 font-bold text-sm"
+              className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-200 transition-all active:scale-95 font-bold text-sm"
             >
               <FaPlusCircle className="text-lg" />
-              <span className="hidden sm:inline">Nuevo Cliente</span>
+              <span>Nuevo Cliente</span>
             </button>
           </div>
         </div>
@@ -172,7 +172,6 @@ function ClientsGrid() {
                 <ClientCard
                   key={client.dni}
                   client={client}
-                  onDelete={deleteClient}
                   onClick={() => handleViewClient(client)}
                 />
               ))}
@@ -258,6 +257,7 @@ function ClientsGrid() {
           isOpen={!!selectedClient}
           onClose={handleCloseViewModal}
           client={selectedClient}
+          onDelete={deleteClient}
         />
       )}
     </div>

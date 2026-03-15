@@ -94,13 +94,13 @@ function NewClientModal({ isOpen, onClose, onCreate }: NewClientProps) {
         onClick={onClose}
       />
 
-      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
         <div className="bg-orange-500 p-6 text-white">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold">Registro de Cliente</h2>
             <button
               onClick={onClose}
-              className="hover:rotate-90 transition-transform disabled:opacity-50"
+              className="hover:rotate-90 transition-transform disabled:opacity-50 cursor-pointer"
               disabled={isSubmitting}
             >
               <FaTimes />

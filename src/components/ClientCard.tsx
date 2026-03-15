@@ -1,68 +1,18 @@
-import { useState } from "react";
 import type { Client } from "../types/classesInterfaces";
 import {
   HiChevronRight,
   HiOutlinePhone,
   HiOutlineLocationMarker,
-  HiOutlineTrash,
 } from "react-icons/hi";
-import Swal from "sweetalert2";
 
 interface ClientCardProps {
   client: Client;
-  onDelete: (id: number | string) => Promise<void>;
   onClick: () => void;
 }
 
-function ClientCard({ client, onDelete, onClick }: ClientCardProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const result = await Swal.fire({
-      title: "¿Estás seguro?",
-      text: `Vas a eliminar a ${client.fullName}`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#94a3b8",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-    });
-    if (result.isConfirmed) {
-      setIsDeleting(true);
-      try {
-        await onDelete(client.id);
-        Swal.fire({
-          title: "¡Logrado!",
-          text: "Cliente eliminado correctamente",
-          icon: "success",
-          iconColor: "#10b981", // Emerald-500
-          confirmButtonColor: "#f97316", // Orange-500
-        });
-      } catch (err) {
-        setIsDeleting(false);
-        Swal.fire({
-          title: "Error",
-          text: "No pudimos procesar la solicitud",
-          icon: "error",
-          confirmButtonColor: "#f97316",
-        });
-      }
-    }
-  };
-
+function ClientCard({ client, onClick }: ClientCardProps) {
   return (
     <div onClick={onClick} className="bg-white w-full p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-orange-100/50 hover:-translate-y-1 cursor-pointer transition-all duration-300 group flex flex-col h-full relative overflow-hidden">
-      {/* Botón Eliminar */}
-      <button
-        onClick={handleDelete}
-        disabled={isDeleting}
-        className="absolute top-4 right-4 z-20 p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors opacity-0 group-hover:opacity-100"
-        title="Eliminar cliente"
-      >
-        <HiOutlineTrash size={18} />
-      </button>
       <div className="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-150 duration-500 opacity-50" />
 
       {/* Cabecera: Avatar e Identificación */}

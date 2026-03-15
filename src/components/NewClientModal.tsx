@@ -4,7 +4,6 @@ import type { Client } from "../types/classesInterfaces.ts";
 import {
   FaUser,
   FaIdCard,
-  FaMapMarkerAlt,
   FaPhone,
   FaTimes,
 } from "react-icons/fa";

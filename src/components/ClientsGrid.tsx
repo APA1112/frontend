@@ -2,7 +2,9 @@ import { useMemo, useState, useEffect } from "react";
 import { useClients } from "../hooks/useClients";
 import ClientCard from "./ClientCard";
 import NewClientModal from "./NewClientModal";
+import ClientModal from "./ClientModal";
 import { FaPlusCircle, FaSearch, FaTimes } from "react-icons/fa";
+import type { Client } from "../types/classesInterfaces";
 
 function ClientsGrid() {
   const { clients, loading, createClient, deleteClient } = useClients();
@@ -10,9 +12,11 @@ function ClientsGrid() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
   const [showLoader, setShowLoader] = useState(true);
-  const [modal, setModal] = useState(false);
+  const [modalNewClient, setModalNewClient] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [sortBy, setSortBy] = useState("newest");
 
-  // Responsive items per page
+  // Responsive items por pagina
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
@@ -31,12 +35,30 @@ function ClientsGrid() {
   }, []);
 
   const filteredClients = useMemo(() => {
-    return clients.filter(
+    let result = clients.filter(
       (client) =>
         client.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         client.dni.toLowerCase().includes(searchTerm.toLowerCase()),
     );
-  }, [clients, searchTerm]);
+    return result.sort((a, b) => {
+      switch (sortBy) {
+        case "alpha-asc":
+          return a.fullName.localeCompare(b.fullName);
+        case "alpha-desc":
+          return b.fullName.localeCompare(a.fullName);
+        case "newest":
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        case "oldest":
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
+        default:
+          return 0;
+      }
+    });
+  }, [clients, searchTerm, sortBy]);
 
   const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
   const paginatedClients = filteredClients.slice(
@@ -44,9 +66,17 @@ function ClientsGrid() {
     currentPage * itemsPerPage,
   );
 
-  const toggleModal = () => {
-    setModal(!modal);
+  const toggleModalNewClient = () => {
+    setModalNewClient(!modalNewClient);
   };
+
+  const handleViewClient = (client: Client) => {
+    setSelectedClient(client);
+  };
+
+  const handleCloseViewModal = () => {
+  setSelectedClient(null);
+};
 
   // Skeleton Loader Component
   if (loading || showLoader) {
@@ -85,6 +115,21 @@ function ClientsGrid() {
           </div>
 
           <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                Ordenar por:
+              </span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-transparent text-sm font-semibold text-slate-700 outline-none cursor-pointer hover:text-orange-600 transition-colors"
+              >
+                <option value="newest">Más recientes</option>
+                <option value="oldest">Más antiguos</option>
+                <option value="alpha-asc">A - Z</option>
+                <option value="alpha-desc">Z - A</option>
+              </select>
+            </div>
             <div className="relative flex-1 md:w-80">
               <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
@@ -108,7 +153,7 @@ function ClientsGrid() {
             </div>
 
             <button
-              onClick={toggleModal}
+              onClick={toggleModalNewClient}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-200 transition-all active:scale-95 font-bold text-sm"
             >
               <FaPlusCircle className="text-lg" />
@@ -124,7 +169,12 @@ function ClientsGrid() {
           {filteredClients.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
               {paginatedClients.map((client) => (
-                <ClientCard key={client.dni} client={client} onDelete={deleteClient}/>
+                <ClientCard
+                  key={client.dni}
+                  client={client}
+                  onDelete={deleteClient}
+                  onClick={() => handleViewClient(client)}
+                />
               ))}
             </div>
           ) : (
@@ -195,8 +245,20 @@ function ClientsGrid() {
         </footer>
       )}
       {/*MODAL CREACIÓN DE CLIENTES*/}
-      {modal && (
-        <NewClientModal isOpen={modal} onClose={() => setModal(false)} onCreate={createClient}/>
+      {modalNewClient && (
+        <NewClientModal
+          isOpen={modalNewClient}
+          onClose={() => setModalNewClient(false)}
+          onCreate={createClient}
+        />
+      )}
+      {/*MODAL INFO DE CLIENTE*/}
+      {selectedClient && (
+        <ClientModal
+          isOpen={!!selectedClient}
+          onClose={handleCloseViewModal}
+          client={selectedClient}
+        />
       )}
     </div>
   );

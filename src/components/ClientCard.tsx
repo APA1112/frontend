@@ -4,33 +4,57 @@ import {
   HiChevronRight,
   HiOutlinePhone,
   HiOutlineLocationMarker,
-  HiOutlineTrash
+  HiOutlineTrash,
 } from "react-icons/hi";
+import Swal from "sweetalert2";
 
 interface ClientCardProps {
   client: Client;
   onDelete: (id: number | string) => Promise<void>;
+  onClick: () => void;
 }
 
-function ClientCard({ client, onDelete }: ClientCardProps) {
+function ClientCard({ client, onDelete, onClick }: ClientCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (window.confirm(`¿Estás seguro de eliminar a ${client.fullName}? ${client.id}`)) {
+    const result = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: `Vas a eliminar a ${client.fullName}`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#94a3b8",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+    if (result.isConfirmed) {
       setIsDeleting(true);
       try {
         await onDelete(client.id);
+        Swal.fire({
+          title: "¡Logrado!",
+          text: "Cliente eliminado correctamente",
+          icon: "success",
+          iconColor: "#10b981", // Emerald-500
+          confirmButtonColor: "#f97316", // Orange-500
+        });
       } catch (err) {
         setIsDeleting(false);
-        alert("No se pudo eliminar al cliente");
+        Swal.fire({
+          title: "Error",
+          text: "No pudimos procesar la solicitud",
+          icon: "error",
+          confirmButtonColor: "#f97316",
+        });
       }
     }
   };
 
   return (
-    <div className="bg-white w-full p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-orange-100/50 hover:-translate-y-1 cursor-pointer transition-all duration-300 group flex flex-col h-full relative overflow-hidden">
-      {/* Botón Eliminar Absoluto */}
+    <div onClick={onClick} className="bg-white w-full p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-orange-100/50 hover:-translate-y-1 cursor-pointer transition-all duration-300 group flex flex-col h-full relative overflow-hidden">
+      {/* Botón Eliminar */}
       <button
         onClick={handleDelete}
         disabled={isDeleting}

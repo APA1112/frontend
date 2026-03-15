@@ -1,4 +1,3 @@
-// NewClientModal.tsx
 import { useState } from "react";
 import type { Client } from "../types/classesInterfaces.ts";
 import {

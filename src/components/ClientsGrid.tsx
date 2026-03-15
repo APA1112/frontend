@@ -5,7 +5,7 @@ import NewClientModal from "./NewClientModal";
 import { FaPlusCircle, FaSearch, FaTimes } from "react-icons/fa";
 
 function ClientsGrid() {
-  const { clients, loading, createClient } = useClients();
+  const { clients, loading, createClient, deleteClient } = useClients();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
@@ -124,7 +124,7 @@ function ClientsGrid() {
           {filteredClients.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
               {paginatedClients.map((client) => (
-                <ClientCard key={client.dni} client={client} />
+                <ClientCard key={client.dni} client={client} onDelete={deleteClient}/>
               ))}
             </div>
           ) : (

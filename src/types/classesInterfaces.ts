@@ -10,6 +10,7 @@ export interface Service {
 }
 
 export interface Client {
+  id: string | number;
   fullName: string;
   dni: string;
   phone: string;

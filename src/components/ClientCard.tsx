@@ -1,17 +1,44 @@
+import { useState } from "react";
 import type { Client } from "../types/classesInterfaces";
 import {
   HiChevronRight,
   HiOutlinePhone,
   HiOutlineLocationMarker,
+  HiOutlineTrash
 } from "react-icons/hi";
 
 interface ClientCardProps {
   client: Client;
+  onDelete: (id: number | string) => Promise<void>;
 }
 
-function ClientCard({ client }: ClientCardProps) {
+function ClientCard({ client, onDelete }: ClientCardProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm(`¿Estás seguro de eliminar a ${client.fullName}? ${client.id}`)) {
+      setIsDeleting(true);
+      try {
+        await onDelete(client.id);
+      } catch (err) {
+        setIsDeleting(false);
+        alert("No se pudo eliminar al cliente");
+      }
+    }
+  };
+
   return (
     <div className="bg-white w-full p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-orange-100/50 hover:-translate-y-1 cursor-pointer transition-all duration-300 group flex flex-col h-full relative overflow-hidden">
+      {/* Botón Eliminar Absoluto */}
+      <button
+        onClick={handleDelete}
+        disabled={isDeleting}
+        className="absolute top-4 right-4 z-20 p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors opacity-0 group-hover:opacity-100"
+        title="Eliminar cliente"
+      >
+        <HiOutlineTrash size={18} />
+      </button>
       <div className="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-150 duration-500 opacity-50" />
 
       {/* Cabecera: Avatar e Identificación */}

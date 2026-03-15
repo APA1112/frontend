@@ -40,9 +40,29 @@ export function useClients() {
       throw err;
     }
   };
+  // Función para eliminar un cliente (DELETE)
+  const deleteClient = async (id: number | string) => {
+    try {
+      const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+
+      if (!res.ok) throw new Error("No se puedo eliminar al cliente");
+      // Actualización optimista: filtramos el cliente eliminado del estado local
+      setClients((prev) => prev.filter((client) => client.id !== id));
+    } catch (err) {
+      setError("No se ha podido eliminar el cliente");
+      throw err;
+    }
+  };
   useEffect(() => {
     fetchClients();
   }, []);
 
-  return { clients, loading, error, createClient, refetch: fetchClients };
+  return {
+    clients,
+    loading,
+    error,
+    createClient,
+    deleteClient,
+    refetch: fetchClients,
+  };
 }

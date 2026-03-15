@@ -8,6 +8,7 @@ import {
   FaPhone,
   FaTimes,
 } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 interface NewClientProps {
   isOpen: boolean;
@@ -33,7 +34,6 @@ function NewClientModal({ isOpen, onClose, onCreate }: NewClientProps) {
 
     try {
       const now = new Date();
-      // Formato: 2025-03-07 00:49:44
       const createdAt = now.toISOString().replace("T", " ").split(".")[0];
 
       await onCreate({
@@ -41,18 +41,33 @@ function NewClientModal({ isOpen, onClose, onCreate }: NewClientProps) {
         createdAt: createdAt,
       });
 
-      onClose(); // Solo cerramos si la creación fue exitosa
+      onClose();
       setFormData({ dni: "", fullName: "", address: "", phone: "" }); // Reset
+      Swal.fire({
+        title: "¡Creado!",
+        text: "El cliente ha sido registrado correctamente.",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+        timerProgressBar: true,
+        toast: true,
+        position: "top-end",
+      });
     } catch (err) {
       console.error("Error al guardar:", err);
-      // Aquí podrías mostrar una alerta visual al usuario
+      Swal.fire({
+        title: "Ups, hubo un error",
+        text: "No se pudo conectar con el servidor. Revisa los datos e intenta de nuevo.",
+        icon: "error",
+        confirmButtonColor: "#f97316",
+        confirmButtonText: "Entendido",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Tip de UX: Si es el DNI, lo pasamos a mayúsculas automáticamente
     const value =
       e.target.name === "dni" ? e.target.value.toUpperCase() : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
@@ -165,9 +180,14 @@ function NewClientModal({ isOpen, onClose, onCreate }: NewClientProps) {
             </button>
             <button
               type="submit"
-              className="flex-1 py-3 rounded-xl font-bold bg-orange-500 text-white shadow-lg shadow-orange-200 hover:bg-orange-600 active:scale-95 transition-all"
+              disabled={isSubmitting}
+              className={`flex-1 py-3 rounded-xl font-bold text-white shadow-lg transition-all ${
+                isSubmitting
+                  ? "bg-slate-400 cursor-not-allowed"
+                  : "bg-orange-500 hover:bg-orange-600 active:scale-95 shadow-orange-200"
+              }`}
             >
-              Guardar Cliente
+              {isSubmitting ? "Guardando..." : "Guardar Cliente"}
             </button>
           </div>
         </form>

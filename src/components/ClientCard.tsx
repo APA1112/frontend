@@ -6,7 +6,6 @@ import {
   HiOutlineLocationMarker,
   HiOutlineTrash
 } from "react-icons/hi";
-import Swal from 'sweetalert2';
 
 interface ClientCardProps {
   client: Client;

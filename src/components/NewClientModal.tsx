@@ -22,8 +22,17 @@ function NewClientModal({ isOpen, onClose, onCreate }: NewClientProps) {
   const [formData, setFormData] = useState({
     dni: "",
     fullName: "",
-    address: "",
     phone: "",
+  });
+  const [addressFields, setAddressFields] = useState({
+    viaType: "Calle", // Valor por defecto
+    viaName: "",
+    number: "",
+    floor: "",
+    door: "",
+    postalCode: "",
+    province: "",
+    city: "",
   });
 
   if (!isOpen) return null;
@@ -35,14 +44,16 @@ function NewClientModal({ isOpen, onClose, onCreate }: NewClientProps) {
     try {
       const now = new Date();
       const createdAt = now.toISOString().replace("T", " ").split(".")[0];
+      const fullAddress = `${addressFields.viaType} ${addressFields.viaName} ${addressFields.number}${addressFields.floor ? ", " + addressFields.floor : ""}${addressFields.door ? addressFields.door : ""}, ${addressFields.postalCode}, ${addressFields.province}, ${addressFields.city}`;
 
       await onCreate({
         ...formData,
+        address: fullAddress,
         createdAt: createdAt,
       });
 
       onClose();
-      setFormData({ dni: "", fullName: "", address: "", phone: "" }); // Reset
+      setFormData({ dni: "", fullName: "", phone: "" }); // Reset
       Swal.fire({
         title: "¡Creado!",
         text: "El cliente ha sido registrado correctamente.",
@@ -71,6 +82,11 @@ function NewClientModal({ isOpen, onClose, onCreate }: NewClientProps) {
     const value =
       e.target.name === "dni" ? e.target.value.toUpperCase() : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
+  };
+  const handleAddressChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    setAddressFields((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   return (
@@ -133,20 +149,89 @@ function NewClientModal({ isOpen, onClose, onCreate }: NewClientProps) {
           </div>
 
           {/* Input Dirección */}
-          <div className="space-y-1">
+          <div className="pt-2 border-t border-slate-100">
             <label className="text-xs font-bold text-slate-500 uppercase ml-1">
               Dirección
             </label>
-            <div className="relative">
-              <FaMapMarkerAlt className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                required
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                placeholder="Calle, Ciudad, Provincia"
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 outline-none transition-all text-slate-700"
-              />
+
+            <div className="space-y-3">
+              {/* Fila 1: Tipo y Nombre de vía */}
+              <div className="flex gap-2">
+                <select
+                  name="viaType"
+                  value={addressFields.viaType}
+                  onChange={handleAddressChange}
+                  className="w-1/3 p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                >
+                  <option value="Calle">Calle</option>
+                  <option value="Avda.">Avda.</option>
+                  <option value="Plaza">Plaza</option>
+                  <option value="Ctra.">Ctra.</option>
+                  <option value="Paseo">Paseo</option>
+                </select>
+                <input
+                  required
+                  name="viaName"
+                  placeholder="Nombre de la vía"
+                  value={addressFields.viaName}
+                  onChange={handleAddressChange}
+                  className="flex-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                />
+              </div>
+
+              {/* Fila 2: Número, Piso y Puerta */}
+              <div className="grid grid-cols-3 gap-2">
+                <input
+                  required
+                  name="number"
+                  placeholder="Nº"
+                  value={addressFields.number}
+                  onChange={handleAddressChange}
+                  className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                />
+                <input
+                  name="floor"
+                  placeholder="Piso (opc)"
+                  value={addressFields.floor}
+                  onChange={handleAddressChange}
+                  className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                />
+                <input
+                  name="door"
+                  placeholder="Pta (opc)"
+                  value={addressFields.door}
+                  onChange={handleAddressChange}
+                  className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                />
+              </div>
+
+              {/* Fila 3: CP, Provincia y Ciudad */}
+              <div className="grid grid-cols-3 gap-2">
+                <input
+                  required
+                  name="postalCode"
+                  placeholder="C.P."
+                  value={addressFields.postalCode}
+                  onChange={handleAddressChange}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                />
+                <input
+                  required
+                  name="province"
+                  placeholder="Provincia"
+                  value={addressFields.city}
+                  onChange={handleAddressChange}
+                  className="flex-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                />
+                <input
+                  required
+                  name="city"
+                  placeholder="Ciudad"
+                  value={addressFields.city}
+                  onChange={handleAddressChange}
+                  className="flex-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                />
+              </div>
             </div>
           </div>
 

@@ -1,7 +1,7 @@
 import { FaTimes, FaPlusCircle } from "react-icons/fa";
-import type { Client } from "../types/classesInterfaces";
+import type { Client, Service } from "../types/classesInterfaces";
 import Swal from "sweetalert2";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HiOutlineTrash } from "react-icons/hi";
 import { FiEdit } from "react-icons/fi";
 
@@ -10,10 +10,124 @@ interface ViewClientProps {
   onClose: () => void;
   client: Client;
   onDelete: (id: number | string) => Promise<void>;
+  onCreate: (newService: {
+    type: string;
+    installAddress: string;
+    clientId: string | number;
+  }) => Promise<void>;
 }
 
-function ClientModal({ isOpen, onClose, client, onDelete }: ViewClientProps) {
+function ClientModal({
+  isOpen,
+  onClose,
+  client,
+  onDelete,
+  onCreate,
+}: ViewClientProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serviceType, setServiceType] = useState("WIMAX");
+  const [formData, setFormData] = useState({
+    type: "",
+  });
+
+  const [addressFields, setAddressFields] = useState({
+    viaType: "Calle", // Valor por defecto
+    viaName: "",
+    number: "",
+    floor: "",
+    door: "",
+    postalCode: "",
+    province: "",
+    city: "",
+  });
+
+  useEffect(() => {
+    if (client?.address) {
+      // 1. Separamos el string por comas y limpiamos espacios
+      const parts = client.address.split(",").map((p) => p.trim());
+
+      // 2. Extraemos el tipo de vía (primera palabra) y el nombre (resto)
+      const firstPart = parts[0] || "";
+      const spaceIndex = firstPart.indexOf(" ");
+
+      const derivedViaType =
+        spaceIndex !== -1 ? firstPart.substring(0, spaceIndex) : "Calle";
+      const derivedViaName =
+        spaceIndex !== -1 ? firstPart.substring(spaceIndex + 1) : firstPart;
+
+      // 3. Seteamos el estado para que el formulario se autollene
+      setAddressFields({
+        viaType: derivedViaType,
+        viaName: derivedViaName,
+        number: parts[1] || "",
+        floor: parts[2] || "",
+        door: "", // Si tu string no tiene puerta separada, se deja para el usuario
+        postalCode: parts[3] || "",
+        city: parts[4] || "",
+        province: "", // Se puede rellenar manualmente o por lógica de CP
+      });
+    }
+  }, [client]); // Se ejecuta cada vez que el cliente cambie
+
+  const handleAddressChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    setAddressFields((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Construcción limpia de la dirección
+      const {
+        viaType,
+        viaName,
+        number,
+        floor,
+        door,
+        postalCode,
+        province,
+        city,
+      } = addressFields;
+      const fullAddress = `${viaType} ${viaName}, ${number}${floor ? ", " + floor : ""}${door ? " " + door : ""}, ${postalCode}, ${city}, ${province}`;
+
+      // 2. Enviamos solo lo que la API pide + el ID del cliente
+      await onCreate({
+        type: serviceType,
+        installAddress: fullAddress,
+        clientId: client.id,
+      });
+
+      onClose();
+      setFormData({ type: "" }); // Reset
+      Swal.fire({
+        title: "¡Creado!",
+        text: "El servicio ha sido registrado correctamente.",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+        timerProgressBar: true,
+        toast: true,
+        position: "top-end",
+      });
+    } catch (err) {
+      console.error("Error al guardar:", err);
+      Swal.fire({
+        title: "Ups, hubo un error",
+        text: "No se pudo conectar con el servidor. Revisa los datos e intenta de nuevo.",
+        icon: "error",
+        confirmButtonColor: "#f97316",
+        confirmButtonText: "Entendido",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const result = await Swal.fire({
@@ -56,7 +170,7 @@ function ClientModal({ isOpen, onClose, client, onDelete }: ViewClientProps) {
         onClick={onClose}
       />
 
-      <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl min-h-[400px] overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div className="relative bg-white rounded-4xl shadow-2xl w-full max-w-2xl min-h-[400px] overflow-hidden animate-in fade-in zoom-in duration-200">
         <div className="bg-orange-500 p-8 text-white">
           <div className="flex flex-row justify-between items-center gap-2">
             <div>
@@ -88,7 +202,7 @@ function ClientModal({ isOpen, onClose, client, onDelete }: ViewClientProps) {
           </div>
         </div>
         {/*INFORMACIÓN*/}
-        <div className="space-y-6 p-2">
+        <div className="space-y-6 p-4">
           {/* Cabecera: Nombre y DNI */}
           <div className="border-b pb-4">
             <h2 className="text-xl font-bold text-gray-800">
@@ -99,7 +213,7 @@ function ClientModal({ isOpen, onClose, client, onDelete }: ViewClientProps) {
             </p>
           </div>
 
-          {/* Información de Contacto (Grid para mejor uso del espacio) */}
+          {/* Información de Contacto */}
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="flex flex-col">
               <span className="text-gray-400 font-semibold uppercase text-[10px]">
@@ -132,7 +246,10 @@ function ClientModal({ isOpen, onClose, client, onDelete }: ViewClientProps) {
                   {client.services?.length || 0}
                 </span>
               </h3>
-              <button className="flex items-center gap-2 p-2 border rounded-2xl cursor-pointer">
+              <button
+                onClick={() => setShowForm(true)}
+                className="flex items-center gap-2 p-2 border rounded-2xl cursor-pointer"
+              >
                 <FaPlusCircle className="text-lg" />
                 Añadir servicio
               </button>
@@ -142,26 +259,26 @@ function ClientModal({ isOpen, onClose, client, onDelete }: ViewClientProps) {
               {client.services?.map((service, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-3 bg-gray-50 border rounded-lg hover:bg-gray-100 transition-colors"
+                  className="flex items-center justify-between p-3 bg-gray-50 border rounded-4xl hover:bg-gray-100 cursor-pointer active:scale-98 transition-all"
                 >
                   <div className="flex flex-col">
                     <span className="font-semibold text-gray-800">
                       {service.type}
                     </span>
                     <span className="text-xs text-gray-500 font-mono italic">
-                      {service.antennaIp}
+                      IP antena: {service.antennaIp}
                     </span>
                     <span className="text-xs text-gray-500 font-mono italic">
-                      {service.signalStrength} dBm
+                      Señal: {service.signalStrength} dBm
                     </span>
                     <span className="text-xs text-gray-500 font-mono italic">
-                      {service.apName}
+                      SSID Repetidor: {service.apName}
                     </span>
                     <span className="text-xs text-gray-500 font-mono italic">
-                      {service.installAddress}
+                      Dirección instalción: {service.installAddress}
                     </span>
                     <span className="text-xs text-gray-500 font-mono italic">
-                      {service.status}
+                      Estado: {service.status}
                     </span>
                   </div>
                   <div
@@ -171,6 +288,135 @@ function ClientModal({ isOpen, onClose, client, onDelete }: ViewClientProps) {
                 </div>
               ))}
             </div>
+            {/*FORMULARIO NUEVO SERVICIO*/}
+            {showForm && (
+              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <div className="">
+                  <div className="flex flex-col">
+                    <label className="text-xs font-bold text-slate-500 uppercase ml-1">
+                      Tipo de servicio
+                    </label>
+                    <select
+                      name="serviceType"
+                      value={addressFields.viaType}
+                      onChange={(e) => setServiceType(e.target.value)}
+                      className="w-1/3 p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                    >
+                      <option value="WIMAX">Wimax</option>
+                      <option value="FTTH">Fibra</option>
+                    </select>
+                  </div>
+
+                  {/* Input Dirección */}
+                  <div className="pt-2 border-t border-slate-100">
+                    <label className="text-xs font-bold text-slate-500 uppercase ml-1">
+                      Dirección
+                    </label>
+
+                    <div className="space-y-3">
+                      {/* Fila 1: Tipo y Nombre de vía */}
+                      <div className="flex gap-2">
+                        <select
+                          name="viaType"
+                          value={addressFields.viaType}
+                          onChange={handleAddressChange}
+                          className="w-1/3 p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                        >
+                          <option value="Calle">Calle</option>
+                          <option value="Avda.">Avda.</option>
+                          <option value="Plaza">Plaza</option>
+                          <option value="Ctra.">Ctra.</option>
+                          <option value="Paseo">Paseo</option>
+                        </select>
+                        <input
+                          required
+                          name="viaName"
+                          placeholder="Nombre de la vía"
+                          value={addressFields.viaName}
+                          onChange={handleAddressChange}
+                          className="flex-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                        />
+                      </div>
+
+                      {/* Fila 2: Número, Piso y Puerta */}
+                      <div className="grid grid-cols-3 gap-2">
+                        <input
+                          required
+                          name="number"
+                          placeholder="Nº"
+                          value={addressFields.number}
+                          onChange={handleAddressChange}
+                          className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                        />
+                        <input
+                          name="floor"
+                          placeholder="Piso (opc)"
+                          value={addressFields.floor}
+                          onChange={handleAddressChange}
+                          className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                        />
+                        <input
+                          name="door"
+                          placeholder="Pta (opc)"
+                          value={addressFields.door}
+                          onChange={handleAddressChange}
+                          className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                        />
+                      </div>
+
+                      {/* Fila 3: CP, Provincia y Ciudad */}
+                      <div className="grid grid-cols-3 gap-2">
+                        <input
+                          required
+                          name="postalCode"
+                          placeholder="C.P."
+                          value={addressFields.postalCode}
+                          onChange={handleAddressChange}
+                          className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                        />
+                        <input
+                          required
+                          name="province"
+                          placeholder="Provincia"
+                          value={addressFields.province}
+                          onChange={handleAddressChange}
+                          className="flex-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                        />
+                        <input
+                          required
+                          name="city"
+                          placeholder="Ciudad"
+                          value={addressFields.city}
+                          onChange={handleAddressChange}
+                          className="flex-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  {/* Botones de acción */}
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowForm(false)}
+                      className="flex-1 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors cursor-pointer"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className={`flex-1 py-3 rounded-xl font-bold text-white shadow-lg transition-all cursor-pointer ${
+                        isSubmitting
+                          ? "bg-slate-400 cursor-not-allowed"
+                          : "bg-orange-500 hover:bg-orange-600 active:scale-95 shadow-orange-200"
+                      }`}
+                    >
+                      {isSubmitting ? "Guardando..." : "Guardar Servicio"}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       </div>

@@ -1,11 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTotalTickets } from "../hooks/useTotalTickets";
-import { useClients } from "../hooks/useClients";
-import { FaUsers } from "react-icons/fa";
 import { FaTicketSimple } from "react-icons/fa6";
 
 function HomePage() {
-  const { clients, loading: loadingClients } = useClients();
   const { tickets, loading: loadingTickets } = useTotalTickets();
   const [isSimulating, setIsSimulating] = useState(true);
 
@@ -14,7 +11,19 @@ function HomePage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const isLoading = isSimulating || loadingClients || loadingTickets;
+  const isLoading = isSimulating || loadingTickets;
+
+  const stats = useMemo(() => {
+  if (!tickets) return { total: 0, resueltos: 0, enRevision: 0 };
+
+  return {
+    total: tickets.length,
+    resueltos: tickets.filter(t => t.status === "CERRADO").length,
+    enRevision: tickets.filter(t => 
+      t.status === "EN CURSO" || t.status === "BLOQUEADO" || t.status === "ABIERTO"
+    ).length
+  };
+}, [tickets]);
 
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center p-6 bg-gray-50/50">
@@ -26,17 +35,24 @@ function HomePage() {
           </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <StatCard
-            label="Clientes totales"
-            value={clients?.length}
-            loading={isLoading}
-            icon={<FaUsers className="w-6 h-6 text-blue-600" />}
-            color="bg-blue-50"
-          />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <StatCard
             label="Tickets registrados"
-            value={tickets?.length}
+            value={stats.total}
+            loading={isLoading}
+            icon={<FaTicketSimple className="w-6 h-6 text-purple-600" />}
+            color="bg-purple-50"
+          />
+          <StatCard
+            label="Tickets resueltos"
+            value={stats.resueltos}
+            loading={isLoading}
+            icon={<FaTicketSimple className="w-6 h-6 text-purple-600" />}
+            color="bg-purple-50"
+          />
+          <StatCard
+            label="Tickets en revisión"
+            value={stats.enRevision}
             loading={isLoading}
             icon={<FaTicketSimple className="w-6 h-6 text-purple-600" />}
             color="bg-purple-50"

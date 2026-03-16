@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useClients } from "../hooks/useClients";
+import { useService } from "../hooks/useService";
 import ClientCard from "./ClientCard";
 import NewClientModal from "./NewClientModal";
 import ClientModal from "./ClientModal";
@@ -9,16 +10,22 @@ import type { Client } from "../types/classesInterfaces";
 function ClientsGrid() {
   const { clients, loading, createClient, deleteClient, searchClients } =
     useClients();
+  const { createService } = useService();
   const [searchTerm, setSearchTerm] = useState("");
   const [modalNewClient, setModalNewClient] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+
+  const handleCreateService = async (serviceData: any) => {
+  await createService(serviceData, selectedClient!.id);
+  // Refrescamos la búsqueda actual para traer los datos actualizados del servidor
+  searchClients(searchTerm);
+};
 
   // Umbral para activar la búsqueda
   const isSearching = searchTerm.trim().length >= 3;
 
   useEffect(() => {
     if (!isSearching) return;
-    // Esperamos 400ms antes de disparar la petición
     const timer = setTimeout(() => {
       searchClients(searchTerm);
     }, 400);
@@ -52,7 +59,7 @@ function ClientsGrid() {
             <input
               type="text"
               value={searchTerm}
-              placeholder="Escribe nombre, apellido o DNI para buscar..."
+              placeholder="Escribe un DNI para buscar..."
               className="w-full pl-12 pr-12 py-4 bg-slate-100 border-2 border-transparent focus:bg-white focus:border-orange-500 rounded-2xl transition-all outline-none text-lg shadow-inner"
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -142,6 +149,7 @@ function ClientsGrid() {
           onClose={() => setSelectedClient(null)}
           client={selectedClient}
           onDelete={deleteClient}
+          onCreate={handleCreateService}
         />
       )}
     </div>

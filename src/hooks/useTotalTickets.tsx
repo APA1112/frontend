@@ -6,6 +6,7 @@ export function useTotalTickets() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  //Función para obtener todos los tickets
   useEffect(() => {
     fetch("https://api.alepaton.dev/api/tickets")
       .then((res) => res.json())

@@ -6,6 +6,7 @@ export function useActiveTickets() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  //Función para obtener los tickets activos
   useEffect(() => {
     fetch("https://api.alepaton.dev/api/tickets/mailbox")
       .then((res) => res.json())

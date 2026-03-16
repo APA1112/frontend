@@ -81,6 +81,7 @@ function NewClientModal({ isOpen, onClose, onCreate }: NewClientProps) {
       e.target.name === "dni" ? e.target.value.toUpperCase() : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
   };
+  
   const handleAddressChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {

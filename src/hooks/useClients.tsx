@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import type { Client } from "../types/classesInterfaces.ts";
 
 export function useClients() {
@@ -7,18 +7,28 @@ export function useClients() {
   const [error, setError] = useState<string | null>(null);
   const API_URL = "https://api.alepaton.dev/api/clients";
 
-  const fetchClients = async () => {
+  //Función para obtener el cliente
+  const searchClients = useCallback(async (query: string) => {
+    if (query.length < 3) {
+      setClients([]);
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await fetch(API_URL);
+      // Fíjate en el cambio de URL: /api/clients/search?q=...
+      const res = await fetch(
+        `${API_URL}/search?q=${encodeURIComponent(query)}`,
+      );
       const data = await res.json();
       setClients(data);
     } catch (err) {
-      setError("Error al cargar clientes");
+      setError("Error en la búsqueda");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
   // Función para crear un cliente (POST)
   const createClient = async (newClientData: Omit<Client, "id">) => {
     try {
@@ -53,9 +63,6 @@ export function useClients() {
       throw err;
     }
   };
-  useEffect(() => {
-    fetchClients();
-  }, []);
 
   return {
     clients,
@@ -63,6 +70,7 @@ export function useClients() {
     error,
     createClient,
     deleteClient,
-    refetch: fetchClients,
+    searchClients,
+    refetch: searchClients,
   };
 }

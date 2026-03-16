@@ -27,7 +27,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
             </h3>
           </div>
           <span className="inline-block px-2 py-0.5 mt-1 bg-slate-100 text-slate-500 text-[10px] font-mono rounded uppercase tracking-wider">
-            ID: {client.dni}
+            DNI: {client.dni}
           </span>
         </div>
       </div>

@@ -1,11 +1,6 @@
 import { useState } from "react";
 import type { Client } from "../types/classesInterfaces.ts";
-import {
-  FaUser,
-  FaIdCard,
-  FaPhone,
-  FaTimes,
-} from "react-icons/fa";
+import { FaUser, FaIdCard, FaPhone, FaTimes } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 interface NewClientProps {
@@ -52,6 +47,16 @@ function NewClientModal({ isOpen, onClose, onCreate }: NewClientProps) {
 
       onClose();
       setFormData({ dni: "", fullName: "", phone: "" }); // Reset
+      setAddressFields({
+        viaType: "Calle", // Valor por defecto
+        viaName: "",
+        number: "",
+        floor: "",
+        door: "",
+        postalCode: "",
+        province: "",
+        city: "",
+      });
       Swal.fire({
         title: "¡Creado!",
         text: "El cliente ha sido registrado correctamente.",
@@ -81,7 +86,7 @@ function NewClientModal({ isOpen, onClose, onCreate }: NewClientProps) {
       e.target.name === "dni" ? e.target.value.toUpperCase() : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
   };
-  
+
   const handleAddressChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
@@ -218,7 +223,7 @@ function NewClientModal({ isOpen, onClose, onCreate }: NewClientProps) {
                   required
                   name="province"
                   placeholder="Provincia"
-                  value={addressFields.city}
+                  value={addressFields.province}
                   onChange={handleAddressChange}
                   className="flex-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-sm"
                 />

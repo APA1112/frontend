@@ -16,10 +16,18 @@ function ClientsGrid() {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   const handleCreateService = async (serviceData: any) => {
-  await createService(serviceData, selectedClient!.id);
-  // Refrescamos la búsqueda actual para traer los datos actualizados del servidor
-  searchClients(searchTerm);
-};
+    await createService(serviceData, selectedClient!.id);
+    // Refrescamos la búsqueda actual para traer los datos actualizados del servidor
+    searchClients(searchTerm);
+  };
+  useEffect(() => {
+    if (selectedClient) {
+      const updated = clients.find((c) => c.id === selectedClient.id);
+      if (updated) {
+        setSelectedClient(updated);
+      }
+    }
+  }, [clients]);
 
   // Umbral para activar la búsqueda
   const isSearching = searchTerm.trim().length >= 3;

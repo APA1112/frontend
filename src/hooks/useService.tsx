@@ -8,6 +8,7 @@ export function useService() {
 
   const API_URL = "https://api.alepaton.dev/api/clients";
 
+  //Función para crear servicio
   const createService = async (
     newServiceData: Omit<Service, "id">,
     id: number | string,
@@ -40,5 +41,13 @@ export function useService() {
       setIsLoading(false); // Se ejecuta tanto si sale bien como si sale mal
     }
   };
-  return { services, error, isLoading, createService, setServices };
+
+  //Función para eliminar servicio
+  const deleteService = async (id: number | string) => {
+    const res = await fetch(`https://api.alepaton.dev/api/services/${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("No se puedo eliminar al cliente");
+  };
+  return { services, error, isLoading, createService, setServices, deleteService };
 }

@@ -51,8 +51,25 @@ export function useClients() {
     }
   };
   //Funcion para editar un cliente (UPDATE)
-  const updateClient = async (id: number | string) => {
+  const updateClient = async (id: number | string, data: Client) => {
     try {
+      const response = await fetch(
+        `${API_URL}/${id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Error en la respuesta del servidor");
+      }
+
+      const result = await response.json();
+      return result;
     } catch (err) {
       setError("No se ha podido actualizar el cliente");
       throw err;

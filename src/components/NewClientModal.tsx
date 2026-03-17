@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { Client } from "../types/classesInterfaces.ts";
 import { FaTimes } from "react-icons/fa";
 import ClientForm from "./ClientForm.tsx";
@@ -11,7 +10,6 @@ interface NewClientProps {
 }
 
 function NewClientModal({ isOpen, onClose, onCreate }: NewClientProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
@@ -29,7 +27,6 @@ function NewClientModal({ isOpen, onClose, onCreate }: NewClientProps) {
             <button
               onClick={onClose}
               className="hover:rotate-90 transition-transform disabled:opacity-50 cursor-pointer"
-              disabled={isSubmitting}
             >
               <FaTimes />
             </button>

@@ -42,24 +42,33 @@ function ServiceForm({ client, onCreate, onclose }: ServiceFormProps) {
   };
   useEffect(() => {
     if (client?.address) {
+      // 1. Limpiamos y separamos por comas
       const parts = client.address.split(",").map((p) => p.trim());
+
+      // 2. Extraemos la primera parte (Tipo vía + Nombre)
       const firstPart = parts[0] || "";
       const spaceIndex = firstPart.indexOf(" ");
-
       const derivedViaType =
         spaceIndex !== -1 ? firstPart.substring(0, spaceIndex) : "Calle";
       const derivedViaName =
         spaceIndex !== -1 ? firstPart.substring(spaceIndex + 1) : firstPart;
 
+      // 3. Lógica dinámica según el número de partes
+      // Suponemos que el formato guardado fue: "Vía Nombre, Nº, [Piso/Puerta], CP, Provincia, Ciudad"
+
+      const hasFloorDoor = parts.length > 5; // Si hay más de 5 partes, es que existe piso/puerta
+
       setAddressFields({
         viaType: derivedViaType,
         viaName: derivedViaName,
         number: parts[1] || "",
-        floor: parts[2] || "",
-        door: "",
-        postalCode: parts[3] || "",
-        city: parts[4] || "",
-        province: "",
+        // Si hay piso, está en la pos 2. Si no, dejamos vacío.
+        floor: hasFloorDoor ? parts[2] : "",
+        door: "", // Podrías intentar splitear parts[2] si guardas piso y puerta juntos
+        // El CP suele ser el antepenúltimo o el que sigue al número
+        postalCode: parts[parts.length - 3] || "",
+        province: parts[parts.length - 2] || "",
+        city: parts[parts.length - 1] || "",
       });
     }
   }, [client]);

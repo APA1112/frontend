@@ -258,14 +258,14 @@ function NewClientModal({ isOpen, onClose, onCreate }: NewClientProps) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+              className="flex-1 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors cursor-pointer"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`flex-1 py-3 rounded-xl font-bold text-white shadow-lg transition-all ${
+              className={`flex-1 py-3 rounded-xl font-bold text-white shadow-lg transition-all cursor-pointer ${
                 isSubmitting
                   ? "bg-slate-400 cursor-not-allowed"
                   : "bg-orange-500 hover:bg-orange-600 active:scale-95 shadow-orange-200"

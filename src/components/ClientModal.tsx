@@ -1,4 +1,4 @@
-import { FaTimes, FaPlusCircle } from "react-icons/fa";
+import { FaTimes, FaPlusCircle, FaEdit } from "react-icons/fa";
 import type { Client } from "../types/classesInterfaces";
 import Swal from "sweetalert2";
 import { useState, useEffect } from "react";
@@ -28,6 +28,9 @@ function ClientModal({
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serviceType, setServiceType] = useState("WIMAX");
+  const [selectedServiceIndex, setSelectedServiceIndex] = useState<
+    number | null
+  >(null);
 
   const [addressFields, setAddressFields] = useState({
     viaType: "Calle", // Valor por defecto
@@ -41,19 +44,19 @@ function ClientModal({
   });
 
   const resetForm = () => {
-  setShowForm(false);
-  setServiceType("WIMAX");
-  setAddressFields({
-    viaType: "Calle",
-    viaName: "",
-    number: "",
-    floor: "",
-    door: "",
-    postalCode: "",
-    province: "",
-    city: "",
-  });
-};
+    setShowForm(false);
+    setServiceType("WIMAX");
+    setAddressFields({
+      viaType: "Calle",
+      viaName: "",
+      number: "",
+      floor: "",
+      door: "",
+      postalCode: "",
+      province: "",
+      city: "",
+    });
+  };
 
   useEffect(() => {
     if (client?.address) {
@@ -253,7 +256,7 @@ function ClientModal({
           <div>
             <div className="flex justify-between mb-4">
               <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                Servicios Contratados
+                Servicios
                 <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">
                   {client.services?.length || 0}
                 </span>
@@ -271,32 +274,75 @@ function ClientModal({
               {client.services?.map((service, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-3 bg-gray-50 border rounded-4xl hover:bg-gray-100 cursor-pointer active:scale-98 transition-all"
+                  onClick={() =>
+                    setSelectedServiceIndex(
+                      selectedServiceIndex === index ? null : index,
+                    )
+                  }
+                  // Cambiamos a flex-col para que los hijos se apilen verticalmente
+                  className={`flex flex-col p-3 bg-gray-50 border rounded-4xl hover:bg-gray-100 cursor-pointer active:scale-98 transition-all ${
+                    selectedServiceIndex === index ? "border-blue-400" : ""
+                  }`}
                 >
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-gray-800">
-                      {service.type}
-                    </span>
-                    <span className="text-xs text-gray-500 font-mono italic">
-                      IP antena: {service.antennaIp}
-                    </span>
-                    <span className="text-xs text-gray-500 font-mono italic">
-                      Señal: {service.signalStrength} dBm
-                    </span>
-                    <span className="text-xs text-gray-500 font-mono italic">
-                      SSID Repetidor: {service.apName}
-                    </span>
-                    <span className="text-xs text-gray-500 font-mono italic">
-                      Dirección instalción: {service.installAddress}
-                    </span>
-                    <span className="text-xs text-gray-500 font-mono italic">
-                      Estado: {service.status}
-                    </span>
+                  {/* Contenedor Superior: Info y Punto de estado */}
+                  <div className="flex items-start justify-between w-full">
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-gray-800">
+                        {service.type}
+                      </span>
+                      <span className="text-xs text-gray-500 font-mono italic">
+                        IP antena: {service.antennaIp}
+                      </span>
+                      <span className="text-xs text-gray-500 font-mono italic">
+                        Señal: {service.signalStrength} dBm
+                      </span>
+                      <span className="text-xs text-gray-500 font-mono italic">
+                        SSID Repetidor: {service.apName}
+                      </span>
+                      <span className="text-xs text-gray-500 font-mono italic">
+                        Dirección instalción: {service.installAddress}
+                      </span>
+                      <span className="text-xs text-gray-500 font-mono italic">
+                        Estado: {service.status}
+                      </span>
+                    </div>
+
+                    <div
+                      className={`h-2 w-2 mt-2 rounded-full ${
+                        service.status === "Activo"
+                          ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+                          : service.status === "Suspendido"
+                            ? "bg-yellow-500"
+                            : "bg-red-500"
+                      } `}
+                      title={service.status}
+                    />
                   </div>
-                  <div
-                    className={`h-2 w-2 rounded-full ${service.status === "Activo" ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" : service.status === "Suspendido" ? "bg-yellow-500" : "bg-red-500"} `}
-                    title="Activo"
-                  />
+
+                  {/* --- BOTÓN CONDICIONAL (Abajo) --- */}
+                  {selectedServiceIndex === index && (
+                    <div className="mt-3 pt-3 border-t border-gray-200 flex justify-end">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // Evita que el clic dispare el onClick del padre
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl transition-colors text-sm font-bold cursor-pointer"
+                        title="Eliminar cliente"
+                      >
+                        <HiOutlineTrash size={18} />
+                        Eliminar
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // Evita que el clic dispare el onClick del padre
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl transition-colors text-sm font-bold cursor-pointer"
+                      >
+                        <FiEdit size={18} />
+                        Editar
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

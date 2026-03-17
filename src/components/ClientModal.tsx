@@ -135,7 +135,10 @@ function ClientModal({
                   <HiOutlineTrash size={20} />
                 </button>
                 <button
-                  onClick={() => {setShowClientForm(true); setShowServiceForm(false)}}
+                  onClick={() => {
+                    setShowClientForm(true);
+                    setShowServiceForm(false);
+                  }}
                   className="p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors cursor-pointer"
                 >
                   <FiEdit size={20} />
@@ -183,7 +186,10 @@ function ClientModal({
                   </span>
                 </h3>
                 <button
-                  onClick={() => {setShowClientForm(false); setShowServiceForm(true)}}
+                  onClick={() => {
+                    setShowClientForm(false);
+                    setShowServiceForm(true);
+                  }}
                   className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 text-orange-600 border border-orange-200 rounded-xl text-sm font-bold hover:bg-orange-100 transition-colors cursor-pointer"
                 >
                   <FaPlusCircle /> Añadir Servicio
@@ -280,7 +286,10 @@ function ClientModal({
                 {showClientForm ? "Editar Cliente" : "Nuevo servicio"}
               </h3>
               <button
-                onClick={() => {setShowServiceForm(false); setShowClientForm(false)}}
+                onClick={() => {
+                  setShowServiceForm(false);
+                  setShowClientForm(false);
+                }}
                 className="text-slate-400 hover:text-slate-600 p-2 cursor-pointer transition-all hover:rotate-90"
               >
                 <FaTimes />
@@ -293,7 +302,10 @@ function ClientModal({
                 onclose={() => setShowServiceForm(false)}
               />
             ) : showClientForm ? (
-              <ClientForm onClose={()=> setShowClientForm(false)} client={client}/>
+              <ClientForm
+                onClose={() => setShowClientForm(false)}
+                client={client}
+              />
             ) : null}
           </div>
         </div>

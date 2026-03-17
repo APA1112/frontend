@@ -26,7 +26,7 @@ function ClientModal({
   onCreate,
 }: ViewClientProps) {
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+  const [showServiceForm, setShowServiceForm] = useState(false);
 
   const [selectedServiceIndex, setSelectedServiceIndex] = useState<
     number | null
@@ -40,6 +40,7 @@ function ClientModal({
       text: `Vas a eliminar a ${client.fullName}`,
       icon: "warning",
       showCancelButton: true,
+      cancelButtonText: "Cancelar",
       confirmButtonColor: "#ef4444",
       confirmButtonText: "Sí, eliminar",
     });
@@ -112,7 +113,7 @@ function ClientModal({
       />
 
       <div
-        className={`relative flex flex-row bg-white rounded-4xl shadow-2xl w-full transition-all duration-300 overflow-hidden animate-in fade-in zoom-in ${showForm ? "max-w-6xl" : "max-w-2xl"}`}
+        className={`relative flex flex-row bg-white rounded-4xl shadow-2xl w-full transition-all duration-300 overflow-hidden animate-in fade-in zoom-in ${showServiceForm ? "max-w-6xl" : "max-w-2xl"}`}
       >
         {/* COLUMNA IZQUIERDA: INFORMACIÓN Y LISTA */}
         <div className="flex-1 flex flex-col min-h-[500px] max-h-[90vh] overflow-y-auto">
@@ -177,10 +178,10 @@ function ClientModal({
                   </span>
                 </h3>
                 <button
-                  onClick={() => setShowForm(true)}
+                  onClick={() => setShowServiceForm(true)}
                   className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 text-orange-600 border border-orange-200 rounded-xl text-sm font-bold hover:bg-orange-100 transition-colors cursor-pointer"
                 >
-                  <FaPlusCircle /> Añadir
+                  <FaPlusCircle /> Añadir Servicio
                 </button>
               </div>
               <div className="flex bg-slate-100 p-1 rounded-xl gap-1 mb-4">
@@ -266,7 +267,7 @@ function ClientModal({
         {/* COLUMNA DERECHA: FORMULARIO (BANDEJA) */}
 
         <div
-          className={`bg-slate-50 border-l border-slate-200 transition-all duration-300 ease-in-out ${showForm ? "w-[450px] opacity-100" : "w-0 opacity-0 pointer-events-none"}`}
+          className={`bg-slate-50 border-l border-slate-200 transition-all duration-300 ease-in-out ${showServiceForm ? "w-[450px] opacity-100" : "w-0 opacity-0 pointer-events-none"}`}
         >
           <div className="w-[450px] h-full flex flex-col">
             <div className="p-6 border-b border-slate-200 bg-white flex justify-between items-center">
@@ -274,13 +275,13 @@ function ClientModal({
                 Nuevo Servicio
               </h3>
               <button
-                onClick={() => setShowForm(false)}
+                onClick={() => setShowServiceForm(false)}
                 className="text-slate-400 hover:text-slate-600 p-2 cursor-pointer transition-all hover:rotate-90"
               >
                 <FaTimes />
               </button>
             </div>
-            <ServiceForm client={client} onCreate={onCreate} onclose={() => setShowForm(false)}/>
+            <ServiceForm client={client} onCreate={onCreate} onclose={() => setShowServiceForm(false)}/>
           </div>
         </div>
       </div>

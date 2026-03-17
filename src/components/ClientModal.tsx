@@ -1,5 +1,5 @@
 import { FaTimes, FaPlusCircle } from "react-icons/fa";
-import type { Client, Service } from "../types/classesInterfaces";
+import type { Client } from "../types/classesInterfaces";
 import Swal from "sweetalert2";
 import { useState, useEffect } from "react";
 import { HiOutlineTrash } from "react-icons/hi";

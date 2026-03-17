@@ -28,9 +28,6 @@ function ClientModal({
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serviceType, setServiceType] = useState("WIMAX");
-  const [formData, setFormData] = useState({
-    type: "",
-  });
 
   const [addressFields, setAddressFields] = useState({
     viaType: "Calle", // Valor por defecto
@@ -42,6 +39,21 @@ function ClientModal({
     province: "",
     city: "",
   });
+
+  const resetForm = () => {
+  setShowForm(false);
+  setServiceType("WIMAX");
+  setAddressFields({
+    viaType: "Calle",
+    viaName: "",
+    number: "",
+    floor: "",
+    door: "",
+    postalCode: "",
+    province: "",
+    city: "",
+  });
+};
 
   useEffect(() => {
     if (client?.address) {
@@ -102,8 +114,8 @@ function ClientModal({
         clientId: client.id,
       });
 
+      resetForm();
       onClose();
-      setFormData({ type: "" }); // Reset
       Swal.fire({
         title: "¡Creado!",
         text: "El servicio ha sido registrado correctamente.",

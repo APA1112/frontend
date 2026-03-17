@@ -49,5 +49,12 @@ export function useService() {
     });
     if (!res.ok) throw new Error("No se puedo eliminar al cliente");
   };
-  return { services, error, isLoading, createService, setServices, deleteService };
+  return {
+    services,
+    error,
+    isLoading,
+    createService,
+    setServices,
+    deleteService,
+  };
 }

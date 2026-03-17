@@ -1,7 +1,7 @@
 import { FaTimes, FaPlusCircle } from "react-icons/fa";
 import type { Client } from "../types/classesInterfaces";
 import Swal from "sweetalert2";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { HiOutlineTrash } from "react-icons/hi";
 import { FiEdit } from "react-icons/fi";
 
@@ -31,6 +31,7 @@ function ClientModal({
   const [selectedServiceIndex, setSelectedServiceIndex] = useState<
     number | null
   >(null);
+  const [filter, setFilter] = useState("Activo");
 
   const [addressFields, setAddressFields] = useState({
     viaType: "Calle",
@@ -148,6 +149,45 @@ function ClientModal({
     }
   };
 
+  const tabs = [
+    {
+      id: "Activo",
+      label: "Activos",
+      color: "text-green-600",
+      bg: "bg-green-100",
+    },
+    {
+      id: "Suspendido",
+      label: "Suspendidos",
+      color: "text-yellow-600",
+      bg: "bg-yellow-100",
+    },
+    { id: "Baja", label: "Bajas", color: "text-red-600", bg: "bg-red-100" },
+    {
+      id: "Pendiente de Instalación",
+      label: "En trámite",
+      color: "text-blue-600",
+      bg: "bg-blue-100",
+    },
+  ];
+  const counts = useMemo(
+    () => ({
+      Activo: client.services?.filter((s) => s.status === "Activo").length,
+      Suspendido: client.services?.filter((s) => s.status === "Suspendido")
+        .length,
+      Baja: client.services?.filter((s) => s.status === "Baja").length,
+      "Pendiente de Instalación": client.services?.filter(
+        (s) => s.status === "Pendiente de Instalación",
+      ).length,
+    }),
+    [client.services],
+  );
+
+  const filteredServices = useMemo(() => {
+    if (!client.services) return [];
+    return client.services.filter((service) => service.status === filter);
+  }, [client.services, filter]);
+
   if (!isOpen) return null;
 
   return (
@@ -229,9 +269,34 @@ function ClientModal({
                   <FaPlusCircle /> Añadir
                 </button>
               </div>
+              <div className="flex bg-slate-100 p-1 rounded-xl gap-1">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setFilter(tab.id)}
+                    className={`
+                flex flex-1 flex-col items-center justify-center py-2 px-1 rounded-lg transition-all duration-200 cursor-pointer
+                ${
+                  filter === tab.id
+                    ? "bg-white shadow-md scale-[1.02] z-10"
+                    : "text-slate-500 hover:bg-slate-200/50"
+                }
+              `}
+                  >
+                    <span
+                      className={`text-lg font-bold ${filter === tab.id ? tab.color : "text-slate-600"}`}
+                    >
+                      {counts[tab.id as keyof typeof counts]}
+                    </span>
+                    <span className="text-[10px] uppercase font-bold tracking-tighter">
+                      {tab.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
 
               <div className="space-y-3">
-                {client.services?.map((service, index) => (
+                {filteredServices?.map((service, index) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -251,7 +316,7 @@ function ClientModal({
                         </p>
                       </div>
                       <div
-                        className={`h-2.5 w-2.5 rounded-full ${service.status === "Activo" ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" : "bg-red-500"}`}
+                        className={`h-2.5 w-2.5 rounded-full ${service.status === "Activo" ? "bg-green-600 shadow-[0_0_8px_rgba(34,197,94,0.6)]" : service.status === "Suspendido" ? "bg-yellow-600 shadow-[0_0_8px_rgba(250,204,21,0.6)]" : service.status === "Baja" ? "bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.6)]" : "bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]"}`}
                       />
                     </div>
 

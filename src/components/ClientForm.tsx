@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Client } from "../types/classesInterfaces.ts";
 import { FaUser, FaIdCard, FaPhone } from "react-icons/fa";
 import Swal from "sweetalert2";
@@ -6,16 +6,42 @@ import Swal from "sweetalert2";
 interface NewClientProps {
   onClose: () => void;
   // Usamos Omit para no pedir el ID, ya que lo genera la API
-  onCreate: (client: Omit<Client, "id">) => Promise<any>;
+  onCreate?: (client: Omit<Client, "id">) => Promise<any>;
+  client?: Client;
 }
 
-function ClientForm({ onClose, onCreate }: NewClientProps) {
+function ClientForm({ onClose, onCreate, client }: NewClientProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    dni: "",
-    fullName: "",
-    phone: "",
+    dni: client?.dni || "",
+    fullName: client?.fullName || "",
+    phone: client?.phone || "",
   });
+
+  useEffect(() => {
+    if (client?.address) {
+      const parts = client.address.split(",").map((p) => p.trim());
+      const firstPart = parts[0] || "";
+      const spaceIndex = firstPart.indexOf(" ");
+
+      const derivedViaType =
+        spaceIndex !== -1 ? firstPart.substring(0, spaceIndex) : "Calle";
+      const derivedViaName =
+        spaceIndex !== -1 ? firstPart.substring(spaceIndex + 1) : firstPart;
+
+      setAddressFields({
+        viaType: derivedViaType,
+        viaName: derivedViaName,
+        number: parts[1] || "",
+        floor: parts[2] || "",
+        door: "",
+        postalCode: parts[3] || "",
+        city: parts[4] || "",
+        province: "",
+      });
+    }
+  }, [client]);
+
   const [addressFields, setAddressFields] = useState({
     viaType: "Calle", // Valor por defecto
     viaName: "",
@@ -27,21 +53,22 @@ function ClientForm({ onClose, onCreate }: NewClientProps) {
     city: "",
   });
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const now = new Date();
-      const createdAt = now.toISOString().replace("T", " ").split(".")[0];
-      const fullAddress = `${addressFields.viaType} ${addressFields.viaName} ${addressFields.number}${addressFields.floor ? ", " + addressFields.floor : ""}${addressFields.door ? addressFields.door : ""}, ${addressFields.postalCode}, ${addressFields.province}, ${addressFields.city}`;
+      if (onCreate) {
+        const now = new Date();
+        const createdAt = now.toISOString().replace("T", " ").split(".")[0];
+        const fullAddress = `${addressFields.viaType} ${addressFields.viaName} ${addressFields.number}${addressFields.floor ? ", " + addressFields.floor : ""}${addressFields.door ? addressFields.door : ""}, ${addressFields.postalCode}, ${addressFields.province}, ${addressFields.city}`;
 
-      await onCreate({
-        ...formData,
-        address: fullAddress,
-        createdAt: createdAt,
-      });
+        await onCreate({
+          ...formData,
+          address: fullAddress,
+          createdAt: createdAt,
+        });
+      }
 
       onClose();
       setFormData({ dni: "", fullName: "", phone: "" }); // Reset
@@ -57,7 +84,7 @@ function ClientForm({ onClose, onCreate }: NewClientProps) {
       });
       Swal.fire({
         title: "¡Creado!",
-        text: "El cliente ha sido registrado correctamente.",
+        text: "El cliente ha sido actualizado correctamente.",
         icon: "success",
         timer: 2000,
         showConfirmButton: false,

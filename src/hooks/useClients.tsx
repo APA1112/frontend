@@ -50,6 +50,14 @@ export function useClients() {
       throw err;
     }
   };
+  //Funcion para editar un cliente (UPDATE)
+  const updateClient = async (id: number | string) => {
+    try {
+    } catch (err) {
+      setError("No se ha podido actualizar el cliente");
+      throw err;
+    }
+  };
   // Función para eliminar un cliente (DELETE)
   const deleteClient = async (id: number | string) => {
     try {
@@ -69,6 +77,7 @@ export function useClients() {
     loading,
     error,
     createClient,
+    updateClient,
     deleteClient,
     searchClients,
     refetch: searchClients,

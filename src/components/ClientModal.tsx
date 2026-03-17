@@ -5,6 +5,7 @@ import { useState, useMemo } from "react";
 import { HiOutlineTrash } from "react-icons/hi";
 import { FiEdit } from "react-icons/fi";
 import ServiceForm from "./ServiceForm";
+import ClientForm from "./ClientForm";
 
 interface ViewClientProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ function ClientModal({
 }: ViewClientProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showServiceForm, setShowServiceForm] = useState(false);
+  const [showClientForm, setShowClientForm] = useState(false);
 
   const [selectedServiceIndex, setSelectedServiceIndex] = useState<
     number | null
@@ -113,7 +115,7 @@ function ClientModal({
       />
 
       <div
-        className={`relative flex flex-row bg-white rounded-4xl shadow-2xl w-full transition-all duration-300 overflow-hidden animate-in fade-in zoom-in ${showServiceForm ? "max-w-6xl" : "max-w-2xl"}`}
+        className={`relative flex flex-row bg-white rounded-4xl shadow-2xl w-full transition-all duration-300 overflow-hidden animate-in fade-in zoom-in ${showServiceForm || showClientForm ? "max-w-6xl" : "max-w-2xl"}`}
       >
         {/* COLUMNA IZQUIERDA: INFORMACIÓN Y LISTA */}
         <div className="flex-1 flex flex-col min-h-[500px] max-h-[90vh] overflow-y-auto">
@@ -132,7 +134,10 @@ function ClientModal({
                 >
                   <HiOutlineTrash size={20} />
                 </button>
-                <button className="p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors cursor-pointer">
+                <button
+                  onClick={() => {setShowClientForm(true); setShowServiceForm(false)}}
+                  className="p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors cursor-pointer"
+                >
                   <FiEdit size={20} />
                 </button>
                 <button
@@ -178,7 +183,7 @@ function ClientModal({
                   </span>
                 </h3>
                 <button
-                  onClick={() => setShowServiceForm(true)}
+                  onClick={() => {setShowClientForm(false); setShowServiceForm(true)}}
                   className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 text-orange-600 border border-orange-200 rounded-xl text-sm font-bold hover:bg-orange-100 transition-colors cursor-pointer"
                 >
                   <FaPlusCircle /> Añadir Servicio
@@ -267,21 +272,29 @@ function ClientModal({
         {/* COLUMNA DERECHA: FORMULARIO (BANDEJA) */}
 
         <div
-          className={`bg-slate-50 border-l border-slate-200 transition-all duration-300 ease-in-out ${showServiceForm ? "w-[450px] opacity-100" : "w-0 opacity-0 pointer-events-none"}`}
+          className={`bg-slate-50 border-l border-slate-200 transition-all duration-300 ease-in-out ${showServiceForm || showClientForm ? "w-[450px] opacity-100" : "w-0 opacity-0 pointer-events-none"}`}
         >
           <div className="w-[450px] h-full flex flex-col">
             <div className="p-6 border-b border-slate-200 bg-white flex justify-between items-center">
               <h3 className="font-bold text-slate-800 text-lg">
-                Nuevo Servicio
+                {showClientForm ? "Editar Cliente" : "Nuevo servicio"}
               </h3>
               <button
-                onClick={() => setShowServiceForm(false)}
+                onClick={() => {setShowServiceForm(false); setShowClientForm(false)}}
                 className="text-slate-400 hover:text-slate-600 p-2 cursor-pointer transition-all hover:rotate-90"
               >
                 <FaTimes />
               </button>
             </div>
-            <ServiceForm client={client} onCreate={onCreate} onclose={() => setShowServiceForm(false)}/>
+            {showServiceForm ? (
+              <ServiceForm
+                client={client}
+                onCreate={onCreate}
+                onclose={() => setShowServiceForm(false)}
+              />
+            ) : showClientForm ? (
+              <ClientForm onClose={()=> setShowClientForm(false)} client={client}/>
+            ) : null}
           </div>
         </div>
       </div>

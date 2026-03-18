@@ -7,10 +7,11 @@ interface NewClientProps {
   onClose: () => void;
   // Usamos Omit para no pedir el ID, ya que lo genera la API
   onCreate?: (client: Omit<Client, "id">) => Promise<any>;
+  onUpdate?: (id: string | number, client: any) => Promise<any>;
   client?: Client;
 }
 
-function ClientForm({ onClose, onCreate, client }: NewClientProps) {
+function ClientForm({ onClose, onCreate, client, onUpdate }: NewClientProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     dni: client?.dni || "",
@@ -62,21 +63,24 @@ function ClientForm({ onClose, onCreate, client }: NewClientProps) {
     city: "",
   });
 
+  //Manejo del formulario tras el submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      if (onCreate) {
+      const fullAddress = `${addressFields.viaType} ${addressFields.viaName} ${addressFields.number}${addressFields.floor ? ", " + addressFields.floor : ""}${addressFields.door ? addressFields.door : ""}, ${addressFields.postalCode}, ${addressFields.province}, ${addressFields.city}`;
+
+      const payload = {
+        ...formData,
+        address: fullAddress,
+      };
+      if (client?.id && onUpdate) {
+        await onUpdate(client.id, payload);
+      } else if (onCreate) {
         const now = new Date();
         const createdAt = now.toISOString().replace("T", " ").split(".")[0];
-        const fullAddress = `${addressFields.viaType} ${addressFields.viaName} ${addressFields.number}${addressFields.floor ? ", " + addressFields.floor : ""}${addressFields.door ? addressFields.door : ""}, ${addressFields.postalCode}, ${addressFields.province}, ${addressFields.city}`;
-
-        await onCreate({
-          ...formData,
-          address: fullAddress,
-          createdAt: createdAt,
-        });
+        await onCreate({ ...payload, createdAt });
       }
 
       onClose();

@@ -8,7 +8,7 @@ import { FaPlusCircle, FaSearch, FaTimes, FaUsers } from "react-icons/fa";
 import type { Client } from "../types/classesInterfaces";
 
 function ClientsGrid() {
-  const { clients, loading, createClient, deleteClient, searchClients } =
+  const { clients, loading, createClient, deleteClient, searchClients, updateClient } =
     useClients();
   const { createService } = useService();
   const [searchTerm, setSearchTerm] = useState("");
@@ -158,6 +158,7 @@ function ClientsGrid() {
           client={selectedClient}
           onDelete={deleteClient}
           onCreate={handleCreateService}
+          onUpdate={updateClient}
         />
       )}
     </div>

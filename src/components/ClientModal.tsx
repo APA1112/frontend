@@ -17,6 +17,7 @@ interface ViewClientProps {
     installAddress: string;
     clientId: string | number;
   }) => Promise<void>;
+  onUpdate: (id: number | string, data: Partial<Client>) => Promise<void>;
 }
 
 function ClientModal({
@@ -25,6 +26,7 @@ function ClientModal({
   client,
   onDelete,
   onCreate,
+  onUpdate
 }: ViewClientProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showServiceForm, setShowServiceForm] = useState(false);
@@ -305,6 +307,7 @@ function ClientModal({
               <ClientForm
                 onClose={() => setShowClientForm(false)}
                 client={client}
+                onUpdate={onUpdate}
               />
             ) : null}
           </div>

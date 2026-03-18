@@ -51,24 +51,26 @@ export function useClients() {
     }
   };
   //Funcion para editar un cliente (UPDATE)
-  const updateClient = async (id: number | string, data: Client) => {
+  const updateClient = async (id: number | string, data: Partial<Client>) => {
     try {
-      const response = await fetch(
-        `${API_URL}/${id}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(data),
+      });
 
       if (!response.ok) {
         throw new Error("Error en la respuesta del servidor");
       }
 
       const result = await response.json();
+      setClients((prevClients) =>
+        prevClients.map((client) =>
+          client.id === id ? { ...client, ...data } : client,
+        ),
+      );
       return result;
     } catch (err) {
       setError("No se ha podido actualizar el cliente");

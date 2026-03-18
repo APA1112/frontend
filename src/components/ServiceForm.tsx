@@ -78,6 +78,7 @@ function ServiceForm({ client, onCreate, onclose }: ServiceFormProps) {
   ) => {
     setAddressFields((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+  //Manejo del formulario tras el submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);

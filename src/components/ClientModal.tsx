@@ -26,11 +26,12 @@ function ClientModal({
   client,
   onDelete,
   onCreate,
-  onUpdate
+  onUpdate,
 }: ViewClientProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showServiceForm, setShowServiceForm] = useState(false);
   const [showClientForm, setShowClientForm] = useState(false);
+  const [showEditService, setShowEditService] = useState(false);
 
   const [selectedServiceIndex, setSelectedServiceIndex] = useState<
     number | null
@@ -117,7 +118,7 @@ function ClientModal({
       />
 
       <div
-        className={`relative flex flex-row bg-white rounded-4xl shadow-2xl w-full transition-all duration-300 overflow-hidden animate-in fade-in zoom-in ${showServiceForm || showClientForm ? "max-w-6xl" : "max-w-2xl"}`}
+        className={`relative flex flex-row bg-white rounded-4xl shadow-2xl w-full transition-all duration-300 overflow-hidden animate-in fade-in zoom-in ${showServiceForm || showClientForm || showEditService ? "max-w-6xl" : "max-w-2xl"}`}
       >
         {/* COLUMNA IZQUIERDA: INFORMACIÓN Y LISTA */}
         <div className="flex-1 flex flex-col min-h-[500px] max-h-[90vh] overflow-y-auto">
@@ -190,6 +191,7 @@ function ClientModal({
                 <button
                   onClick={() => {
                     setShowClientForm(false);
+                    setShowEditService(false)
                     setShowServiceForm(true);
                   }}
                   className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 text-orange-600 border border-orange-200 rounded-xl text-sm font-bold hover:bg-orange-100 transition-colors cursor-pointer"
@@ -256,7 +258,7 @@ function ClientModal({
                         </div>
                         <div className="flex gap-2">
                           <button
-                            onClick={(e) => e.stopPropagation()}
+                            onClick={(e) => {e.stopPropagation(); setShowEditService(true)}}
                             className="p-2 text-slate-500 hover:text-orange-600 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 transition-all shadow-sm cursor-pointer"
                           >
                             <FiEdit size={16} />
@@ -280,17 +282,18 @@ function ClientModal({
         {/* COLUMNA DERECHA: FORMULARIO (BANDEJA) */}
 
         <div
-          className={`bg-slate-50 border-l border-slate-200 transition-all duration-300 ease-in-out ${showServiceForm || showClientForm ? "w-[450px] opacity-100" : "w-0 opacity-0 pointer-events-none"}`}
+          className={`bg-slate-50 border-l border-slate-200 transition-all duration-300 ease-in-out ${showServiceForm || showClientForm || showEditService ? "w-[450px] opacity-100" : "w-0 opacity-0 pointer-events-none"}`}
         >
           <div className="w-[450px] h-full flex flex-col">
             <div className="p-6 border-b border-slate-200 bg-white flex justify-between items-center">
               <h3 className="font-bold text-slate-800 text-lg">
-                {showClientForm ? "Editar Cliente" : "Nuevo servicio"}
+                {showClientForm ? "Editar Cliente" : showEditService ? "Editar servicio" : "Crear Servicio"}
               </h3>
               <button
                 onClick={() => {
                   setShowServiceForm(false);
                   setShowClientForm(false);
+                  setShowEditService(false)
                 }}
                 className="text-slate-400 hover:text-slate-600 p-2 cursor-pointer transition-all hover:rotate-90"
               >
@@ -308,6 +311,12 @@ function ClientModal({
                 onClose={() => setShowClientForm(false)}
                 client={client}
                 onUpdate={onUpdate}
+              />
+            ) : showEditService ? (
+              <ServiceForm
+                client={client}
+                onCreate={onCreate}
+                onclose={() => setShowEditService(false)}
               />
             ) : null}
           </div>

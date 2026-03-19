@@ -7,6 +7,11 @@ export interface Service {
   installAddress: string;
   status: string;
   client: Client;
+  ontMac: string;
+  ponPort: string;
+  splitterId: string;
+  opticalPower: string;
+  id: string;
 }
 
 export interface Client {

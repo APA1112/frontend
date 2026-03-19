@@ -10,7 +10,7 @@ interface WimaxFieldsProps {
 
 function WimaxForm({ data, onChange }: WimaxFieldsProps) {
   return (
-    <div className="space-y-4 pt-4 border-t border-slate-200">
+    <div className="space-y-4 border-t border-slate-200">
       <label className="text-xs font-bold text-slate-500 uppercase ml-1">
         MAC Antena
       </label>

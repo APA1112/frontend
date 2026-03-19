@@ -34,9 +34,20 @@ function ClientModal({
   const [showEditService, setShowEditService] = useState(false);
 
   const [selectedServiceIndex, setSelectedServiceIndex] = useState<
-    number | null
+    string | null
   >(null);
   const [filter, setFilter] = useState("Activo");
+
+  const selectedService = client.services?.find((service) => service.id === selectedServiceIndex);
+
+  console.log({
+  index: selectedServiceIndex,
+  type: typeof selectedServiceIndex,
+  servicesLength: client?.services?.length,
+  fullServices: client?.services
+});
+  console.log(selectedService);
+  console.log(selectedServiceIndex);
 
   const handleClientDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -230,11 +241,9 @@ function ClientModal({
                   <div
                     key={index}
                     onClick={() =>
-                      setSelectedServiceIndex(
-                        selectedServiceIndex === index ? null : index,
-                      )
+                      setSelectedServiceIndex(service.id)
                     }
-                    className={`flex flex-col p-4 bg-slate-50 border rounded-3xl hover:bg-slate-100 cursor-pointer transition-all ${selectedServiceIndex === index ? "border-orange-400 ring-1 ring-orange-400" : "border-slate-200"}`}
+                    className={`flex flex-col p-4 bg-slate-50 border rounded-3xl hover:bg-slate-100 cursor-pointer transition-all ${selectedServiceIndex === service.id ? "border-orange-400 ring-1 ring-orange-400" : "border-slate-200"}`}
                   >
                     <div className="flex justify-between items-start">
                       <div>
@@ -250,7 +259,7 @@ function ClientModal({
                       />
                     </div>
 
-                    {selectedServiceIndex === index && (
+                    {selectedServiceIndex === service.id && (
                       <div className="mt-4 pt-4 border-t border-slate-200 flex justify-between items-center animate-in slide-in-from-top-2 duration-200">
                         <div className="text-[10px] text-slate-400 font-mono space-y-0.5">
                           <p>IP: {service.antennaIp}</p>
@@ -317,6 +326,7 @@ function ClientModal({
                 client={client}
                 onCreate={onCreate}
                 onclose={() => setShowEditService(false)}
+                service={selectedService}
               />
             ) : null}
           </div>

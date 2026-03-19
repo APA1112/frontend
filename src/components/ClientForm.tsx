@@ -33,7 +33,7 @@ function ClientForm({ onClose, onCreate, client, onUpdate }: NewClientProps) {
         spaceIndex !== -1 ? firstPart.substring(spaceIndex + 1) : firstPart;
 
       // 3. Lógica dinámica según el número de partes
-      // Suponemos que el formato guardado fue: "Vía Nombre, Nº, [Piso/Puerta], CP, Provincia, Ciudad"
+      // El formato guardado es: "Vía Nombre, Nº, [Piso/Puerta], CP, Provincia, Ciudad"
 
       const hasFloorDoor = parts.length > 5; // Si hay más de 5 partes, es que existe piso/puerta
 
@@ -69,7 +69,7 @@ function ClientForm({ onClose, onCreate, client, onUpdate }: NewClientProps) {
     setIsSubmitting(true);
 
     try {
-      const fullAddress = `${addressFields.viaType} ${addressFields.viaName} ${addressFields.number}${addressFields.floor ? ", " + addressFields.floor : ""}${addressFields.door ? addressFields.door : ""}, ${addressFields.postalCode}, ${addressFields.province}, ${addressFields.city}`;
+      const fullAddress = `${addressFields.viaType} ${addressFields.viaName}, ${addressFields.number}${addressFields.floor ? ", " + addressFields.floor : ""}${addressFields.door ? addressFields.door : ""}, ${addressFields.postalCode}, ${addressFields.province}, ${addressFields.city}`;
 
       const payload = {
         ...formData,

@@ -18,6 +18,9 @@ interface ServiceFormProps {
 function ServiceForm({ client, onCreate, onclose, service }: ServiceFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serviceType, setServiceType] = useState("WIMAX");
+  const [selectedStatus, setSelectedStatus] = useState(
+    service?.status || "Activo",
+  );
   const [addressFields, setAddressFields] = useState({
     viaType: "Calle",
     viaName: "",
@@ -78,7 +81,7 @@ function ServiceForm({ client, onCreate, onclose, service }: ServiceFormProps) {
         spaceIndex !== -1 ? firstPart.substring(spaceIndex + 1) : firstPart;
 
       // 3. Lógica dinámica según el número de partes
-      // El formato guardado fue: "Vía Nombre, Nº, [Piso/Puerta], CP, Provincia, Ciudad"
+      // El formato guardado es: "Vía Nombre, Nº, [Piso/Puerta], CP, Provincia, Ciudad"
 
       const hasFloorDoor = parts.length > 5; // Si hay más de 5 partes, es que existe piso/puerta
 
@@ -217,13 +220,17 @@ function ServiceForm({ client, onCreate, onclose, service }: ServiceFormProps) {
                 Estado
               </label>
               <select
-                value={service.status} // Asegúrate de tener 'status' en technicalData o un estado propio
+                value={selectedStatus} // Asegúrate de tener 'status' en technicalData o un estado propio
                 name="status"
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  setSelectedStatus(e.target.value); // Esto permite que el select cambie visualmente
+                }}
                 className="w-full p-2 text-sm bg-white border border-slate-200 rounded-xl outline-none focus:border-orange-500 cursor-pointer"
               >
                 <option value="Activo">Activo</option>
                 <option value="Suspendido">Suspendido</option>
                 <option value="Baja">Baja</option>
+                <option value="Pendiente de Instalación">En trámite</option>
               </select>
             </div>
           )}

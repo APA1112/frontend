@@ -87,7 +87,7 @@ function ClientsGrid() {
 
       {/* CONTENIDO DINÁMICO */}
       <main className="flex-1 overflow-y-auto p-6">
-        <div className="max-w-[1600px] mx-auto h-full">
+        <div className="max-w-400 mx-auto h-full">
           {/* CASO 1: No se ha buscado nada aún */}
           {!isSearching && (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-4">

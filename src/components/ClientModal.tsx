@@ -38,16 +38,18 @@ function ClientModal({
   >(null);
   const [filter, setFilter] = useState("Activo");
 
-  const selectedService = client.services?.find((service) => service.id === selectedServiceIndex);
+  const selectedService = client.services?.find(
+    (service) => service.id === selectedServiceIndex,
+  );
 
-  console.log({
-  index: selectedServiceIndex,
-  type: typeof selectedServiceIndex,
-  servicesLength: client?.services?.length,
-  fullServices: client?.services
-});
-  console.log(selectedService);
-  console.log(selectedServiceIndex);
+  const handleSelectedService = (id: string) => {
+    if (selectedServiceIndex !== null && selectedServiceIndex === id) {
+      setSelectedServiceIndex(null);
+      setShowEditService(false);
+    } else {
+      setSelectedServiceIndex(id);
+    }
+  };
 
   const handleClientDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -122,7 +124,7 @@ function ClientModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
         onClick={onClose}
@@ -132,7 +134,7 @@ function ClientModal({
         className={`relative flex flex-row bg-white rounded-4xl shadow-2xl w-full transition-all duration-300 overflow-hidden animate-in fade-in zoom-in ${showServiceForm || showClientForm || showEditService ? "max-w-6xl" : "max-w-2xl"}`}
       >
         {/* COLUMNA IZQUIERDA: INFORMACIÓN Y LISTA */}
-        <div className="flex-1 flex flex-col min-h-[500px] max-h-[90vh] overflow-y-auto">
+        <div className="flex-1 flex flex-col min-h-125 max-h-[90vh] overflow-y-auto">
           {/* CABECERA */}
           <div className="bg-orange-500 p-6 text-white sticky top-0 z-20 shadow-md">
             <div className="flex flex-row justify-between items-center">
@@ -202,7 +204,7 @@ function ClientModal({
                 <button
                   onClick={() => {
                     setShowClientForm(false);
-                    setShowEditService(false)
+                    setShowEditService(false);
                     setShowServiceForm(true);
                   }}
                   className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 text-orange-600 border border-orange-200 rounded-xl text-sm font-bold hover:bg-orange-100 transition-colors cursor-pointer"
@@ -240,9 +242,7 @@ function ClientModal({
                 {filteredServices?.map((service, index) => (
                   <div
                     key={index}
-                    onClick={() =>
-                      setSelectedServiceIndex(service.id)
-                    }
+                    onClick={() => handleSelectedService(service.id)}
                     className={`flex flex-col p-4 bg-slate-50 border rounded-3xl hover:bg-slate-100 cursor-pointer transition-all ${selectedServiceIndex === service.id ? "border-orange-400 ring-1 ring-orange-400" : "border-slate-200"}`}
                   >
                     <div className="flex justify-between items-start">
@@ -267,7 +267,10 @@ function ClientModal({
                         </div>
                         <div className="flex gap-2">
                           <button
-                            onClick={(e) => {e.stopPropagation(); setShowEditService(true)}}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowEditService(true);
+                            }}
                             className="p-2 text-slate-500 hover:text-orange-600 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 transition-all shadow-sm cursor-pointer"
                           >
                             <FiEdit size={16} />
@@ -291,18 +294,22 @@ function ClientModal({
         {/* COLUMNA DERECHA: FORMULARIO (BANDEJA) */}
 
         <div
-          className={`bg-slate-50 border-l border-slate-200 transition-all duration-300 ease-in-out ${showServiceForm || showClientForm || showEditService ? "w-[450px] opacity-100" : "w-0 opacity-0 pointer-events-none"}`}
+          className={`bg-slate-50 border-l border-slate-200 transition-all duration-300 ease-in-out ${showServiceForm || showClientForm || showEditService ? "w-112.5 opacity-100" : "w-0 opacity-0 pointer-events-none"}`}
         >
-          <div className="w-[450px] h-full flex flex-col">
+          <div className="w-112.5 h-full flex flex-col">
             <div className="p-6 border-b border-slate-200 bg-white flex justify-between items-center">
               <h3 className="font-bold text-slate-800 text-lg">
-                {showClientForm ? "Editar Cliente" : showEditService ? "Editar servicio" : "Crear Servicio"}
+                {showClientForm
+                  ? "Editar Cliente"
+                  : showEditService
+                    ? "Editar servicio"
+                    : "Crear Servicio"}
               </h3>
               <button
                 onClick={() => {
                   setShowServiceForm(false);
                   setShowClientForm(false);
-                  setShowEditService(false)
+                  setShowEditService(false);
                 }}
                 className="text-slate-400 hover:text-slate-600 p-2 cursor-pointer transition-all hover:rotate-90"
               >
@@ -325,7 +332,7 @@ function ClientModal({
               <ServiceForm
                 client={client}
                 onCreate={onCreate}
-                onclose={() => setShowEditService(false)}
+                onclose={() => {setShowEditService(false); setSelectedServiceIndex(null)}}
                 service={selectedService}
               />
             ) : null}

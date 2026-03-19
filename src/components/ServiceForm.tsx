@@ -6,13 +6,13 @@ import FtthFields from "./FtthFields";
 
 interface ServiceFormProps {
   client: Client;
+  service?: Service;
   onCreate: (newService: {
     type: string;
     installAddress: string;
     clientId: string | number;
   }) => Promise<void>;
   onclose: () => void;
-  service?: Service;
 }
 
 function ServiceForm({ client, onCreate, onclose, service }: ServiceFormProps) {

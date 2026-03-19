@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import type { Client } from "../types/classesInterfaces";
 import Swal from "sweetalert2";
+import WimaxFields from "./WimaxFields";
+import FtthFields from "./FtthFields";
 
 interface ServiceFormProps {
   client: Client;
@@ -25,6 +27,26 @@ function ServiceForm({ client, onCreate, onclose }: ServiceFormProps) {
     province: "",
     city: "",
   });
+  const [technicalData, setTechnicalData] = useState({
+    // Wimax
+    antennaIp: "",
+    antennaMac: "",
+    apName: "",
+    signalStrength: "",
+    // FTTH
+    ontMac: "",
+    ponPort: "",
+    splitterId: "",
+    opticalPower: "",
+  });
+
+  const handleTechnicalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setTechnicalData((prev) => ({
+      ...prev,
+      [name]: name === "signalStrength" ? Number(value) : value,
+    }));
+  };
 
   const resetForm = () => {
     onclose();
@@ -95,10 +117,26 @@ function ServiceForm({ client, onCreate, onclose }: ServiceFormProps) {
       } = addressFields;
       const fullAddress = `${viaType} ${viaName}, ${number}${floor ? ", " + floor : ""}${door ? " " + door : ""}, ${postalCode}, ${city}, ${province}`;
 
+      const specificFields =
+        serviceType === "WIMAX"
+          ? {
+              antennaIp: technicalData.antennaIp,
+              antennaMac: technicalData.antennaMac,
+              apName: technicalData.apName,
+              signalStrength: technicalData.signalStrength,
+            }
+          : {
+              ontMac: technicalData.ontMac,
+              ponPort: technicalData.ponPort,
+              splitterId: technicalData.splitterId,
+              opticalPower: technicalData.opticalPower,
+            };
+
       await onCreate({
         type: serviceType,
         installAddress: fullAddress,
         clientId: client.id,
+        ...specificFields
       });
 
       resetForm();
@@ -211,6 +249,12 @@ function ServiceForm({ client, onCreate, onclose }: ServiceFormProps) {
             className="p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none focus:border-orange-500"
           />
         </div>
+        {serviceType === "WIMAX" && (
+          <WimaxFields data={technicalData} onChange={handleTechnicalChange} />
+        )}
+        {serviceType === "FTTH" && (
+          <FtthFields data={technicalData} onChange={handleTechnicalChange} />
+        )}
       </div>
 
       <div className="flex gap-3 pt-6 mt-auto">

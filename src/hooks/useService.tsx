@@ -6,7 +6,8 @@ export function useService() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const API_URL = "https://api.alepaton.dev/api/clients";
+  const API_POST_URL = "https://api.alepaton.dev/api/clients";
+  const API_URL = "https://api.alepaton.dev/api/services";
 
   //Función para crear servicio
   const createService = async (
@@ -17,7 +18,7 @@ export function useService() {
     setError(null);
 
     try {
-      const res = await fetch(`${API_URL}/${id}/services`, {
+      const res = await fetch(`${API_POST_URL}/${id}/services`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newServiceData),
@@ -44,7 +45,7 @@ export function useService() {
 
   //Función para eliminar servicio
   const deleteService = async (id: number | string) => {
-    const res = await fetch(`https://api.alepaton.dev/api/services/${id}`, {
+    const res = await fetch(`${API_URL}/${id}`, {
       method: "DELETE",
     });
     if (!res.ok) throw new Error("No se puedo eliminar al cliente");

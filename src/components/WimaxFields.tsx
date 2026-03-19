@@ -19,7 +19,7 @@ function WimaxForm({ data, onChange }: WimaxFieldsProps) {
           required
           value={data.antennaMac}
           onChange={onChange}
-          name="antenna_mac"
+          name="antennaMac"
           placeholder="00:1e:c2:9e:28:6b"
           className="flex-1 p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none focus:border-orange-500"
         />
@@ -32,7 +32,7 @@ function WimaxForm({ data, onChange }: WimaxFieldsProps) {
           required
           value={data.antennaIp}
           onChange={onChange}
-          name="antenna_ip"
+          name="antennaIp"
           placeholder="10.135.131.68"
           className="flex-1 p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none focus:border-orange-500"
         />
@@ -45,7 +45,7 @@ function WimaxForm({ data, onChange }: WimaxFieldsProps) {
           required
           value={data.apName}
           onChange={onChange}
-          name="ap_name"
+          name="apName"
           placeholder="AP 450 Los Jopos"
           className="flex-1 p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none focus:border-orange-500"
         />
@@ -58,7 +58,7 @@ function WimaxForm({ data, onChange }: WimaxFieldsProps) {
           required
           value={data.signalStrength}
           onChange={onChange}
-          name="signal_strength"
+          name="signalStrength"
           placeholder="-78"
           className="flex-1 p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none focus:border-orange-500"
         />

@@ -19,7 +19,7 @@ function FtthFields({data, onChange}: FtthFieldsProps) {
           required
           value={data.ontMac}
           onChange={onChange}
-          name="ont_mac"
+          name="ontMac"
           placeholder="00:1e:c2:9e:28:6b"
           className="flex-1 p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none focus:border-orange-500"
         />
@@ -32,7 +32,7 @@ function FtthFields({data, onChange}: FtthFieldsProps) {
           required
           value={data.ponPort}
           onChange={onChange}
-          name="pon_port"
+          name="ponPort"
           placeholder="PON-XX"
           className="flex-1 p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none focus:border-orange-500"
         />
@@ -45,7 +45,7 @@ function FtthFields({data, onChange}: FtthFieldsProps) {
           required
           value={data.splitterId}
           onChange={onChange}
-          name="splitter_id"
+          name="splitterId"
           placeholder="SPL-XXX"
           className="flex-1 p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none focus:border-orange-500"
         />
@@ -58,7 +58,7 @@ function FtthFields({data, onChange}: FtthFieldsProps) {
           required
           value={data.opticalPower}
           onChange={onChange}
-          name="optical_power"
+          name="opticalPower"
           placeholder="-18"
           className="flex-1 p-3 bg-white border border-slate-200 rounded-2xl text-sm outline-none focus:border-orange-500"
         />

@@ -17,7 +17,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
 
       {/* Cabecera: Avatar e Identificación */}
       <div className="flex items-start gap-4 mb-5 relative z-10">
-        <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-orange-200 group-hover:rotate-3 transition-transform">
+        <div className="w-14 h-14 bg-linear-to-br from-orange-400 to-orange-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-orange-200 group-hover:rotate-3 transition-transform">
           {client.fullName.charAt(0)}
         </div>
         <div className="flex-1 min-w-0">

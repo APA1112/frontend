@@ -18,6 +18,7 @@ interface ViewClientProps {
     clientId: string | number;
   }) => Promise<void>;
   onUpdate: (id: number | string, data: Partial<Client>) => Promise<void>;
+  onUpdateService: (id: number | string, data: any) => Promise<void>;
 }
 
 function ClientModal({
@@ -27,6 +28,7 @@ function ClientModal({
   onDelete,
   onCreate,
   onUpdate,
+  onUpdateService,
 }: ViewClientProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showServiceForm, setShowServiceForm] = useState(false);
@@ -331,7 +333,7 @@ function ClientModal({
             ) : showEditService ? (
               <ServiceForm
                 client={client}
-                onCreate={onCreate}
+                onUpdate={onUpdateService}
                 onclose={() => {setShowEditService(false); setSelectedServiceIndex(null)}}
                 service={selectedService}
               />

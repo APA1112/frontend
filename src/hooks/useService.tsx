@@ -43,6 +43,13 @@ export function useService() {
     }
   };
 
+  //Función para editar el servicio
+  const updateService = async (id: number | string, data: any) => {
+    console.log("--- Editando Servicio ---");
+    console.log("ID del servicio:", id);
+    console.log("Datos para la API:", data);
+  };
+
   //Función para eliminar servicio
   const deleteService = async (id: number | string) => {
     const res = await fetch(`${API_URL}/${id}`, {
@@ -57,5 +64,6 @@ export function useService() {
     createService,
     setServices,
     deleteService,
+    updateService,
   };
 }

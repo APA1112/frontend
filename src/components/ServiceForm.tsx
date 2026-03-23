@@ -7,15 +7,22 @@ import FtthFields from "./FtthFields";
 interface ServiceFormProps {
   client: Client;
   service?: Service;
-  onCreate: (newService: {
+  onCreate?: (newService: {
     type: string;
     installAddress: string;
     clientId: string | number;
   }) => Promise<void>;
+  onUpdate?: (id: string | number, data: any) => Promise<void>;
   onclose: () => void;
 }
 
-function ServiceForm({ client, onCreate, onclose, service }: ServiceFormProps) {
+function ServiceForm({
+  client,
+  onCreate,
+  onclose,
+  service,
+  onUpdate,
+}: ServiceFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serviceType, setServiceType] = useState("WIMAX");
   const [selectedStatus, setSelectedStatus] = useState(
@@ -137,46 +144,55 @@ function ServiceForm({ client, onCreate, onclose, service }: ServiceFormProps) {
       } = addressFields;
       const fullAddress = `${viaType} ${viaName}, ${number}${floor ? ", " + floor : ""}${door ? " " + door : ""}, ${postalCode}, ${city}, ${province}`;
 
-      const specificFields =
-        serviceType === "WIMAX"
-          ? {
-              antennaIp: technicalData.antennaIp,
-              antennaMac: technicalData.antennaMac,
-              apName: technicalData.apName,
-              signalStrength: technicalData.signalStrength,
-            }
-          : {
-              ontMac: technicalData.ontMac,
-              ponPort: technicalData.ponPort,
-              splitterId: technicalData.splitterId,
-              opticalPower: technicalData.opticalPower,
-            };
-
-      if (service) {
-        await onCreate({
+      if (service && onUpdate) {
+        const specificFields =
+          serviceType === "WIMAX"
+            ? {
+                antennaIp: technicalData.antennaIp,
+                antennaMac: technicalData.antennaMac,
+                apName: technicalData.apName,
+                signalStrength: technicalData.signalStrength,
+              }
+            : {
+                ontMac: technicalData.ontMac,
+                ponPort: technicalData.ponPort,
+                splitterId: technicalData.splitterId,
+                opticalPower: technicalData.opticalPower,
+              };
+        await onUpdate(service.id, {
           type: serviceType,
           installAddress: fullAddress,
           clientId: client.id,
+          status: selectedStatus,
           ...specificFields,
         });
-      } else {
+        resetForm();
+        Swal.fire({
+          title: "¡Guardado!",
+          text: "Servicio editado correctamente.",
+          icon: "success",
+          timer: 2000,
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+        });
+      } else if (onCreate) {
         await onCreate({
           type: serviceType,
           installAddress: fullAddress,
           clientId: client.id,
         });
+        resetForm();
+        Swal.fire({
+          title: "¡Creado!",
+          text: "Servicio registrado correctamente.",
+          icon: "success",
+          timer: 2000,
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+        });
       }
-
-      resetForm();
-      Swal.fire({
-        title: "¡Creado!",
-        text: "Servicio registrado correctamente.",
-        icon: "success",
-        timer: 2000,
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-      });
     } catch (err) {
       Swal.fire({ title: "Error", text: "No se pudo guardar.", icon: "error" });
     } finally {

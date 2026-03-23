@@ -10,7 +10,7 @@ import type { Client } from "../types/classesInterfaces";
 function ClientsGrid() {
   const { clients, loading, createClient, deleteClient, searchClients, updateClient } =
     useClients();
-  const { createService } = useService();
+  const { createService, updateService } = useService();
   const [searchTerm, setSearchTerm] = useState("");
   const [modalNewClient, setModalNewClient] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
@@ -159,6 +159,7 @@ function ClientsGrid() {
           onDelete={deleteClient}
           onCreate={handleCreateService}
           onUpdate={updateClient}
+          onUpdateService={updateService}
         />
       )}
     </div>

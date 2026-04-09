@@ -1,7 +1,7 @@
 import { FaTimes, FaPlusCircle } from "react-icons/fa";
 import type { Client, Service } from "../types/classesInterfaces";
 import Swal from "sweetalert2";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { HiOutlineTrash } from "react-icons/hi";
 import { FiEdit } from "react-icons/fi";
 import ServiceForm from "./ServiceForm";
@@ -34,13 +34,35 @@ function ClientModal({
   const [showServiceForm, setShowServiceForm] = useState(false);
   const [showClientForm, setShowClientForm] = useState(false);
   const [showEditService, setShowEditService] = useState(false);
+  const [localClient, setLocalClient] = useState<Client>(client);
+
+  useEffect(() => {
+    setLocalClient(client);
+  }, [client]);
+
+  const handleUpdateService = useCallback(
+    async (id: number | string, data: any): Promise<Service> => {
+      const updatedService = await onUpdateService(id, data);
+
+      // Reemplazamos el servicio actualizado dentro del cliente local
+      setLocalClient((prev) => ({
+        ...prev,
+        services: prev.services?.map((s) =>
+          s.id === updatedService.id ? updatedService : s,
+        ),
+      }));
+
+      return updatedService;
+    },
+    [onUpdateService],
+  );
 
   const [selectedServiceIndex, setSelectedServiceIndex] = useState<
     string | null
   >(null);
   const [filter, setFilter] = useState("Activo");
 
-  const selectedService = client.services?.find(
+  const selectedService = localClient.services?.find(
     (service) => service.id === selectedServiceIndex,
   );
 
@@ -107,21 +129,21 @@ function ClientModal({
   ];
   const counts = useMemo(
     () => ({
-      Activo: client.services?.filter((s) => s.status === "Activo").length,
-      Suspendido: client.services?.filter((s) => s.status === "Suspendido")
+      Activo: localClient.services?.filter((s) => s.status === "Activo").length,
+      Suspendido: localClient.services?.filter((s) => s.status === "Suspendido")
         .length,
-      Baja: client.services?.filter((s) => s.status === "Baja").length,
-      "Pendiente de Instalación": client.services?.filter(
+      Baja: localClient.services?.filter((s) => s.status === "Baja").length,
+      "Pendiente de Instalación": localClient.services?.filter(
         (s) => s.status === "Pendiente de Instalación",
       ).length,
     }),
-    [client.services],
+    [localClient.services],
   );
 
   const filteredServices = useMemo(() => {
-    if (!client.services) return [];
-    return client.services.filter((service) => service.status === filter);
-  }, [client.services, filter]);
+    if (!localClient.services) return [];
+    return localClient.services.filter((service) => service.status === filter);
+  }, [localClient.services, filter]);
 
   if (!isOpen) return null;
 
@@ -141,7 +163,7 @@ function ClientModal({
           <div className="bg-orange-500 p-6 text-white sticky top-0 z-20 shadow-md">
             <div className="flex flex-row justify-between items-center">
               <div>
-                <h2 className="text-xl font-bold">{client.fullName}</h2>
+                <h2 className="text-xl font-bold">{localClient.fullName}</h2>
                 <p className="text-orange-100 text-sm">Ficha del cliente</p>
               </div>
               <div className="flex items-center gap-3">
@@ -178,19 +200,21 @@ function ClientModal({
                 <span className="text-[10px] font-bold text-slate-400 uppercase">
                   DNI
                 </span>
-                <span className="text-sm font-medium">{client.dni}</span>
+                <span className="text-sm font-medium">{localClient.dni}</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-[10px] font-bold text-slate-400 uppercase">
                   Teléfono
                 </span>
-                <span className="text-sm font-medium">{client.phone}</span>
+                <span className="text-sm font-medium">{localClient.phone}</span>
               </div>
               <div className="flex flex-col col-span-2">
                 <span className="text-[10px] font-bold text-slate-400 uppercase">
                   Dirección de Facturación
                 </span>
-                <span className="text-sm font-medium">{client.address}</span>
+                <span className="text-sm font-medium">
+                  {localClient.address}
+                </span>
               </div>
             </div>
 
@@ -200,7 +224,7 @@ function ClientModal({
                 <h3 className="font-bold text-slate-800 flex items-center gap-2">
                   Servicios{" "}
                   <span className="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full text-xs">
-                    {client.services?.length || 0}
+                    {localClient.services?.length || 0}
                   </span>
                 </h3>
                 <button
@@ -320,21 +344,24 @@ function ClientModal({
             </div>
             {showServiceForm ? (
               <ServiceForm
-                client={client}
+                client={localClient}
                 onCreate={onCreate}
                 onclose={() => setShowServiceForm(false)}
               />
             ) : showClientForm ? (
               <ClientForm
                 onClose={() => setShowClientForm(false)}
-                client={client}
+                client={localClient}
                 onUpdate={onUpdate}
               />
             ) : showEditService ? (
               <ServiceForm
-                client={client}
-                onUpdate={onUpdateService}
-                onclose={() => {setShowEditService(false); setSelectedServiceIndex(null)}}
+                client={localClient}
+                onUpdate={handleUpdateService}
+                onclose={() => {
+                  setShowEditService(false);
+                  setSelectedServiceIndex(null);
+                }}
                 service={selectedService}
               />
             ) : null}

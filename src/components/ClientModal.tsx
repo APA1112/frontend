@@ -1,5 +1,5 @@
 import { FaTimes, FaPlusCircle } from "react-icons/fa";
-import type { Client } from "../types/classesInterfaces";
+import type { Client, Service } from "../types/classesInterfaces";
 import Swal from "sweetalert2";
 import { useState, useMemo } from "react";
 import { HiOutlineTrash } from "react-icons/hi";
@@ -18,7 +18,7 @@ interface ViewClientProps {
     clientId: string | number;
   }) => Promise<void>;
   onUpdate: (id: number | string, data: Partial<Client>) => Promise<void>;
-  onUpdateService: (id: number | string, data: any) => Promise<void>;
+  onUpdateService: (id: number | string, data: any) => Promise<Service>;
 }
 
 function ClientModal({

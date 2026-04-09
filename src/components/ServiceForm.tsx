@@ -12,7 +12,7 @@ interface ServiceFormProps {
     installAddress: string;
     clientId: string | number;
   }) => Promise<void>;
-  onUpdate?: (id: string | number, data: any) => Promise<void>;
+  onUpdate?: (id: string | number, data: any) => Promise<Service>;
   onclose: () => void;
 }
 
@@ -25,9 +25,7 @@ function ServiceForm({
 }: ServiceFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serviceType, setServiceType] = useState("WIMAX");
-  const [selectedStatus, setSelectedStatus] = useState(
-    service?.status || "Activo",
-  );
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [addressFields, setAddressFields] = useState({
     viaType: "Calle",
     viaName: "",
@@ -50,6 +48,28 @@ function ServiceForm({
     splitterId: "",
     opticalPower: "",
   });
+
+  const parseAddress = (address: string) => {
+    const parts = address.split(",").map((p) => p.trim());
+    const firstPart = parts[0] || "";
+    const spaceIndex = firstPart.indexOf(" ");
+    const derivedViaType =
+      spaceIndex !== -1 ? firstPart.substring(0, spaceIndex) : "Calle";
+    const derivedViaName =
+      spaceIndex !== -1 ? firstPart.substring(spaceIndex + 1) : firstPart;
+    const hasFloorDoor = parts.length > 5;
+
+    return {
+      viaType: derivedViaType,
+      viaName: derivedViaName,
+      number: parts[1] || "",
+      floor: hasFloorDoor ? parts[2] : "",
+      door: "",
+      postalCode: parts[parts.length - 3] || "",
+      province: parts[parts.length - 2] || "",
+      city: parts[parts.length - 1] || "",
+    };
+  };
 
   const handleTechnicalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -109,6 +129,11 @@ function ServiceForm({
 
   useEffect(() => {
     if (service) {
+      setServiceType(service.type || "WIMAX");
+      setSelectedStatus(service.status || "Activo");
+      if (service.installAddress) {
+        setAddressFields(parseAddress(service.installAddress));
+      }
       setTechnicalData({
         antennaIp: service.antennaIp || "",
         antennaMac: service.antennaMac || "",
@@ -121,6 +146,13 @@ function ServiceForm({
       });
     }
   }, [service]);
+
+  useEffect(() => {
+    // ✅ FIX Bug 2: solo aplicar dirección del cliente si NO estamos editando
+    if (!service && client?.address) {
+      setAddressFields(parseAddress(client.address));
+    }
+  }, [client, service]);
 
   const handleAddressChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -246,7 +278,6 @@ function ServiceForm({
                 <option value="Activo">Activo</option>
                 <option value="Suspendido">Suspendido</option>
                 <option value="Baja">Baja</option>
-                <option value="Pendiente de Instalación">En trámite</option>
               </select>
             </div>
           )}

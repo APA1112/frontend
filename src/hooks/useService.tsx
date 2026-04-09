@@ -44,10 +44,42 @@ export function useService() {
   };
 
   //Función para editar el servicio
-  const updateService = async (id: number | string, data: any) => {
-    console.log("--- Editando Servicio ---");
-    console.log("ID del servicio:", id);
-    console.log("Datos para la API:", data);
+  const updateService = async (id: number | string, data: Partial<Service>) => {
+    setIsLoading(true);
+    setError(null);
+
+    // Limpiamos los campos que gestiona el backend
+    const { clientId, type, ...cleanData } = data as any;
+    console.log("Datos enviados al backend:", cleanData);
+
+    try {
+      const res = await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cleanData),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "Error al actualizar el servicio");
+      }
+
+      const updatedService: Service = await res.json();
+
+      // Actualizamos solo el servicio modificado en el estado local
+      setServices((prev) =>
+        prev.map((s) => (s.id === updatedService.id ? updatedService : s)),
+      );
+
+      return updatedService;
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Error desconocido";
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   //Función para eliminar servicio
